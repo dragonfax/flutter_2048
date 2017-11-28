@@ -4,6 +4,8 @@ enum Direction { up, down, left, right }
 
 class Peice {
   int value;
+
+  Peice([this.value]);
 }
 
 List<int> range(int start, end) {
@@ -12,18 +14,34 @@ List<int> range(int start, end) {
 }
 
 class Board {
-  List<List<Peice>> grid;
+
+  // Visualized, x across, y down
+  // rows-first,
+  // so, first dimention is y, second is x
+  List<List<Peice>> _grid;
+
+  Set(int x, y, Peice p) {
+    _grid[y][x] = p;
+  }
+
+  Peice Get(int x, y) {
+    return _grid[y][x];
+  }
+
+  String toString() {
+    return _grid.toString();
+  }
 
   List<List<Peice>> getColumns() {
     return range(0,3).map((int x){
-      return grid.map((row) {
+      return _grid.map((row) {
         return row[x];
       }).toList();
     }).toList();
   }
 
   List<List<Peice>> getRows() {
-    return grid;
+    return _grid;
   }
 
   setColumns(List<List<Peice>> columns) {
@@ -31,21 +49,23 @@ class Board {
     columns.forEach((column){
       int y = 0;
       column.forEach((p){
-        grid[x][y] = p;
+        _grid[y][x] = p;
+        y++;
       });
+      x++;
     });
   }
 
   setRows(List<List<Peice>> rows) {
-    grid = rows;
+    _grid = rows;
   }
 
   Board() {
-    grid = new List<List<Peice>>();
+    _grid = new List<List<Peice>>();
     for ( int x = 0; x < 4; x++) {
-      grid.add(new List<Peice>());
+      _grid.add(new List<Peice>());
       for ( int y = 0; y < 4; y++) {
-        grid[x].add(null);
+        _grid[x].add(null);
       }
     }
   }
