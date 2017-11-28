@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'board.dart';
 
 void main() {
   runApp(new MyApp());
 }
 
-enum Direction { up, down, left, right }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -46,108 +46,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class Peice {
-  int value;
-}
-
-class Board {
-  List<List<Peice>> grid;
-
-  List<List<Peice>> getColumns() {
-    return null;
-  }
-
-  List<List<Peice>> getRows() {
-    return null;
-  }
-
-  setColumns(List<List<Peice>> columns) {
-
-  }
-
-  setRows(List<List<Peice>> columns) {
-
-  }
-
-  Board() {
-    grid = new List<List<Peice>>();
-    for ( int x = 0; x < 4; x++) {
-      grid.add(new List<Peice>());
-      for ( int y = 0; y < 4; y++) {
-        grid[x].add(null);
-      }
-    }
-  }
-
-  swipe(Direction direction) {
-    // move everyting with physics
-
-    List<List<Peice>> columns;
-
-    if ( direction == Direction.up || direction == Direction.down ) {
-      columns = getColumns();
-    } else {
-      columns = getRows();
-    }
-
-    List<int> cellSequence;
-
-    if ( direction == Direction.up || direction == Direction.left ) {
-      cellSequence = <int>[0, 1, 2, 3];
-    } else {
-      cellSequence = <int>[3, 2, 1, 0];
-    }
-
-    var newColumns = columns.map((column) {
-      return swipeColumn(column, cellSequence);
-    }).toList();
-
-    if ( direction == Direction.up || direction == Direction.down ) {
-      setColumns(newColumns);
-    }
-    else {
-      setRows(newColumns);
-    }
-  }
-
-  List<Peice> swipeColumn(List<Peice> column, List<int> cellSequence) {
-    var newColumn = <Peice>[ null, null, null, null ];
-
-    int lastIMerged = 4; // out of bounds
-
-    for ( int i = 3; i >=0; i--) {
-      var x = cellSequence[i];
-      if ( column[x] != null ) {
-        var peice = column[x];
-        if (i == 3) {
-          // no previous piece.
-          newColumn[x] = peice;
-        } else {
-
-          int rightMostNewI;
-          Peice rightMostPeice;
-          for ( int rI = i; i <= 3; i++ ) {
-            var rX = cellSequence[rI];
-            if ( newColumn[rX] != null ) {
-              rightMostNewI = rI;
-              rightMostPeice = newColumn[rX];
-            }
-          }
-
-          if ( peice.value == rightMostPeice.value && lastIMerged != rightMostNewI  ) {
-            // can merge peices.
-            rightMostPeice.value = rightMostPeice.value * 2;
-            lastIMerged = rightMostNewI; // only merge each target cell once
-          } else {
-            // just slide this one over, then
-            newColumn[cellSequence[rightMostNewI - 1]] = peice;
-          }
-        }
-      }
-    }
-    return newColumn;
-  }
-}
 
 
 class _MyHomePageState extends State<MyHomePage> {
