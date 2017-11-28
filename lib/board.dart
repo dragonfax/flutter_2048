@@ -11,6 +11,11 @@ class Peice {
   Peice([this.value]);
 }
 
+class Position {
+  int x, y;
+  Position(this.x, this.y);
+}
+
 List<int> range(int start, end) {
   var l = end  + 1 - start;
   return new List<int>.generate(l, (i) => start + i);
@@ -33,6 +38,19 @@ class Board {
 
   String toString() {
     return _grid.toString();
+  }
+
+  Position RandomEmptyPosition() {
+    Position p;
+    range(0,3).forEach((x){
+      range(0,3).forEach((y){
+        if (_grid[y][x] == null ) {
+          p = new Position(x,y);
+        }
+      });
+    });
+
+    return p;
   }
 
   List<List<Peice>> getColumns() {
@@ -64,6 +82,10 @@ class Board {
   }
 
   Board() {
+    Reset();
+  }
+
+  Reset() {
     _grid = new List<List<Peice>>();
     for ( int x = 0; x < 4; x++) {
       _grid.add(new List<Peice>());
