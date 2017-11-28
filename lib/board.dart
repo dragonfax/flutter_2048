@@ -1,5 +1,8 @@
 
 
+// Direction of swiping.
+// so a "left" swipe starts on the right side of the screen.
+// could also be considered the arrow button used to elicit the response. (left arrow)
 enum Direction { up, down, left, right }
 
 class Peice {
@@ -84,13 +87,13 @@ class Board {
     List<int> cellSequence; // abstracts which order to look at the column/row (asc or desc)
 
     if ( direction == Direction.up || direction == Direction.left ) {
-      cellSequence = <int>[0, 1, 2, 3];
-    } else {
       cellSequence = <int>[3, 2, 1, 0];
+    } else {
+      cellSequence = <int>[0, 1, 2, 3];
     }
 
     var newColumns = columns.map((column) {
-      return swipeColumn(column, cellSequence);
+      return _swipeColumn(column, cellSequence);
     }).toList();
 
     if ( direction == Direction.up || direction == Direction.down ) {
@@ -101,7 +104,7 @@ class Board {
     }
   }
 
-  List<Peice> swipeColumn(List<Peice> column, List<int> cellSequence) {
+  List<Peice> _swipeColumn(List<Peice> column, List<int> cellSequence) {
     var newColumn = <Peice>[ null, null, null, null ];
 
     int lastIMerged = 4; // out of bounds
@@ -115,9 +118,9 @@ class Board {
           newColumn[x] = peice;
         } else {
 
-          int rightMostNewI;
+          int rightMostNewI = 4;
           Peice rightMostPeice;
-          for ( int rI = i; i <= 3; i++ ) {
+          for ( int rI = i; rI <= 3; rI++ ) {
             var rX = cellSequence[rI];
             if ( newColumn[rX] != null ) {
               rightMostNewI = rI;
@@ -125,7 +128,7 @@ class Board {
             }
           }
 
-          if ( peice.value == rightMostPeice.value && lastIMerged != rightMostNewI  ) {
+          if ( peice.value == rightMostPeice?.value && lastIMerged != rightMostNewI  ) {
             // can merge peices.
             rightMostPeice.value = rightMostPeice.value * 2;
             lastIMerged = rightMostNewI; // only merge each target cell once

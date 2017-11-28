@@ -65,4 +65,29 @@ void main() {
 
   });
 
+  test('#swipe(Left) Move one peice', () {
+    var b = new Board();
+    b.Set(3, 1, new Peice(1));
+    b.swipe(Direction.left);
+    expect(b.Get(0,1)?.value,1, reason: b.toString());
+  });
+
+  test('#swipe(Left) Move two peices', () {
+    var b = new Board();
+    b.Set(3, 1, new Peice(1));
+    b.Set(2, 1, new Peice(2));
+    b.swipe(Direction.left);
+    expect(b.Get(0,1)?.value,2, reason: b.toString());
+    expect(b.Get(1,1)?.value,1, reason: b.toString());
+  });
+
+  test('#swipe(Left) Merge two peices', () {
+    var b = new Board();
+    b.Set(3, 1, new Peice(2));
+    b.Set(2, 1, new Peice(2));
+    b.swipe(Direction.left);
+    expect(b.Get(0,1)?.value,4, reason: b.toString());
+    expect(b.Get(1,1),null, reason: b.toString());
+  });
+
  }
