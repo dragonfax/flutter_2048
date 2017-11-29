@@ -52,8 +52,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Board board = new Board();
 
+  _MyHomePageState() {
+    addNewPeice();
+  }
+
   newGame() {
-    setState(() { board.Reset(); });
+    setState(() {
+      board.Reset();
+      addNewPeice();
+    });
   }
 
   addNewPeice() {
@@ -76,8 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: new GestureDetector(
           child: new BoardWidget(board),
           onHorizontalDragEnd: (deets) {
