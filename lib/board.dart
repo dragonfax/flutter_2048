@@ -130,16 +130,6 @@ class Board {
     return list.where((p) { return p != null; }).toList();
   }
 
-  List<int> expand(int length, List<int> list) {
-    if ( list.length >= length ) {
-      return list;
-    }
-
-    list.length = length;
-
-    return list;
-  }
-
   List<int> mergeNeighbor(List<int> list ) {
     // find one neighbor next to its twin, merge them, return the new list.
     bool merged = false;
@@ -183,11 +173,8 @@ class Board {
 
   List<int> swipeColumn(List<int> column) {
 
-    var l1 = removeEmpty(column);
-    var l2 = mergeNeighbors(l1);
-    var l3 = removeEmpty(l2);
-    var l4 = expand(4, l3);
-
-    return l4;
+    var l1 = removeEmpty(mergeNeighbors(removeEmpty(column)));
+    l1.length = 4;
+    return l1;
   }
 }

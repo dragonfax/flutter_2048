@@ -109,19 +109,6 @@ void main() {
     expect(b.get(1,1),null, reason: b.toString());
   });
 
-  test('#expand', () {
-    var b = new Board();
-
-    var c = b.expand(4, <int>[]);
-    expect(c.length, 4);
-
-    c = b.expand(4, <int>[ 1 ]);
-    expect(c.length, 4);
-
-    c = b.expand(4, <int>[ 1 ]);
-    expect(c[0], 1);
-  });
-
   test('#removeEmpty', () {
     var b = new Board();
 
