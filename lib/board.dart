@@ -100,7 +100,7 @@ class Board {
       columns = getRows();
     }
 
-    bool left;
+    bool left = false;
     if ( direction == Direction.up || direction == Direction.left ) {
       left = true;
     }
@@ -140,7 +140,7 @@ class Board {
         return null;
       }
 
-      if ( !merged && list.length > x + 1 && list[x] == list[x + 1] ) {
+      if ( !merged && list.length > x + 1 && list[x] != null && list[x] == list[x + 1] ) {
         // merge them.
         merged = true;
         mergePartnerRemoved = false;
