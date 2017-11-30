@@ -32,7 +32,7 @@ class BoardWidgetState extends State<BoardWidget> {
             borderRadius: const BorderRadius.all(const Radius.circular(10.0))
           ),
           child: new Text(
-            peice == null ? " " : peice.value.toString(),
+            peice == null ? " " : peice.toString(),
             style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold)
           )
         );

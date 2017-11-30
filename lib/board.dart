@@ -5,12 +5,6 @@
 // could also be considered the arrow button used to elicit the response. (left arrow)
 enum Direction { up, down, left, right }
 
-class Peice {
-  int value;
-
-  Peice([this.value]);
-}
-
 class Position {
   int x, y;
   Position(this.x, this.y);
@@ -26,13 +20,13 @@ class Board {
   // Visualized, x across, y down
   // rows-first,
   // so, first dimention is y, second is x
-  List<List<Peice>> _grid;
+  List<List<int>> _grid;
 
-  Set(int x, y, Peice p) {
+  set(int x, y, int p) {
     _grid[y][x] = p;
   }
 
-  Peice Get(int x, y) {
+  int get(int x, y) {
     return _grid[y][x];
   }
 
@@ -40,7 +34,7 @@ class Board {
     return _grid.toString();
   }
 
-  Position RandomEmptyPosition() {
+  Position randomEmptyPosition() {
     Position p;
     range(0,3).forEach((x){
       range(0,3).forEach((y){
@@ -53,7 +47,7 @@ class Board {
     return p;
   }
 
-  List<List<Peice>> getColumns() {
+  List<List<int>> getColumns() {
     return range(0,3).map((int x){
       return _grid.map((row) {
         return row[x];
@@ -61,11 +55,11 @@ class Board {
     }).toList();
   }
 
-  List<List<Peice>> getRows() {
+  List<List<int>> getRows() {
     return _grid;
   }
 
-  setColumns(List<List<Peice>> columns) {
+  setColumns(List<List<int>> columns) {
     int x = 0;
     columns.forEach((column){
       int y = 0;
@@ -77,18 +71,18 @@ class Board {
     });
   }
 
-  setRows(List<List<Peice>> rows) {
+  setRows(List<List<int>> rows) {
     _grid = rows;
   }
 
   Board() {
-    Reset();
+    reset();
   }
 
-  Reset() {
-    _grid = new List<List<Peice>>();
+  reset() {
+    _grid = new List<List<int>>();
     for ( int x = 0; x < 4; x++) {
-      _grid.add(new List<Peice>());
+      _grid.add(new List<int>());
       for ( int y = 0; y < 4; y++) {
         _grid[x].add(null);
       }
@@ -98,7 +92,7 @@ class Board {
   swipe(Direction direction) {
     // abstract the "direction" out of the sliding algorithm.
 
-    List<List<Peice>> columns; // columns or rows.
+    List<List<int>> columns; // columns or rows.
 
     if ( direction == Direction.up || direction == Direction.down ) {
       columns = getColumns();
@@ -106,16 +100,13 @@ class Board {
       columns = getRows();
     }
 
-    List<int> cellSequence; // abstracts which order to look at the column/row (asc or desc)
-
+    bool left;
     if ( direction == Direction.up || direction == Direction.left ) {
-      cellSequence = <int>[3, 2, 1, 0];
-    } else {
-      cellSequence = <int>[0, 1, 2, 3];
+      left = true;
     }
 
     var newColumns = columns.map((column) {
-      return _swipeColumn(column, cellSequence);
+      return _swipeColumn(column, left);
     }).toList();
 
     if ( direction == Direction.up || direction == Direction.down ) {
@@ -126,41 +117,76 @@ class Board {
     }
   }
 
-  List<Peice> _swipeColumn(List<Peice> column, List<int> cellSequence) {
-    var newColumn = <Peice>[ null, null, null, null ];
+  List<int> removeEmpty(List<int> list) {
+    return list.where((p) { return p != null; }).toList();
+  }
 
-    int lastIMerged = 4; // out of bounds
-
-    for ( int i = 3; i >=0; i--) {
-      var x = cellSequence[i];
-      if ( column[x] != null ) {
-        var peice = column[x];
-        if (i == 3) {
-          // no previous piece.
-          newColumn[x] = peice;
-        } else {
-
-          int rightMostNewI = 4;
-          Peice rightMostPeice;
-          for ( int rI = i; rI <= 3; rI++ ) {
-            var rX = cellSequence[rI];
-            if ( newColumn[rX] != null ) {
-              rightMostNewI = rI;
-              rightMostPeice = newColumn[rX];
-            }
-          }
-
-          if ( peice.value == rightMostPeice?.value && lastIMerged != rightMostNewI  ) {
-            // can merge peices.
-            rightMostPeice.value = rightMostPeice.value * 2;
-            lastIMerged = rightMostNewI; // only merge each target cell once
-          } else {
-            // just slide this one over, then
-            newColumn[cellSequence[rightMostNewI - 1]] = peice;
-          }
-        }
-      }
+  List<int> expand(int length, List<int> list, bool left) {
+    if ( list.length >= length ) {
+      return list;
     }
-    return newColumn;
+
+
+    if ( left ) {
+      list.length = length;
+    } else {
+      var need = length - list.length;
+      List<int> ln = [];
+      ln.length = need;
+      list.insertAll(0,ln);
+    }
+
+    return list;
+  }
+
+  List<int> mergeNeighbor(List<int> list ) {
+    // find one neighbor next to its twin, merge them, return the new list.
+    bool merged = false;
+    bool mergePartnerRemoved = true;
+    var l1 = range(0,list.length - 1).map((x) {
+      if ( ! mergePartnerRemoved ) {
+        mergePartnerRemoved = true;
+        return null;
+      }
+
+      if ( !merged && list.length > x + 1 && list[x] == list[x + 1] ) {
+        // merge them.
+        merged = true;
+        mergePartnerRemoved = false;
+        return list[x] * 2;
+      }
+
+      return list[x];
+    }).toList();
+
+    if ( merged ) {
+      return l1;
+    } else {
+      return list;
+    }
+  }
+
+  List<int> mergeNeighbors(List<int> list) {
+    var l1 = list;
+    var l2 = mergeNeighbor(l1);
+    while ( true ) {
+      l2 = mergeNeighbor(l1);
+      if ( l1 == l2 ) {
+        break;
+      }
+      l1 = l2;
+    }
+
+    return l2;
+  }
+
+  List<int> _swipeColumn(List<int> column, bool left) {
+
+    var l1 = removeEmpty(column);
+    var l2 = mergeNeighbors(l1);
+    var l3 = removeEmpty(l2);
+    var l4 = expand(4, l3, left);
+
+    return l4;
   }
 }

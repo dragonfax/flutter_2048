@@ -58,14 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   newGame() {
     setState(() {
-      board.Reset();
+      board.reset();
       addNewPeice();
     });
   }
 
   addNewPeice() {
-    var p = board.RandomEmptyPosition();
-    board.Set(p.x,p.y,new Peice(1));
+    var p = board.randomEmptyPosition();
+    board.set(p.x,p.y,1);
   }
 
   @override

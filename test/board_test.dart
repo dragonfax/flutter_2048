@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:test/test.dart';
 
 import '../lib/board.dart';
@@ -24,70 +23,116 @@ void main() {
 
   test('construct', () {
     var b = new Board();
-    expect(b.Get(3,3), null);
+    expect(b.get(3,3), null);
   });
 
   test('#getRows',() {
 
     var b = new Board();
-    b.Set(3,1, new Peice(99));
-    expect(b.getRows()[1][3].value,99);
+    b.set(3,1, 99);
+    expect(b.getRows()[1][3],99);
 
   });
 
   test('#getColumns',() {
 
     var b = new Board();
-    b.Set(3,1, new Peice(99));
-    expect(b.getColumns()[3][1].value,99);
+    b.set(3,1, 99);
+    expect(b.getColumns()[3][1],99);
 
   });
 
   test('#setRows',() {
 
     var b = new Board();
-    b.Set(3,1,new Peice(99));
+    b.set(3,1,99);
 
     var c = new Board();
     c.setRows(b.getRows());
-    expect(b.Get(3,1).value,99);
+    expect(b.get(3,1),99);
 
   });
 
   test('#setColumns',() {
 
     var b = new Board();
-    b.Set(3,1, new Peice(99));
+    b.set(3,1, 99);
 
     var c = new Board();
     c.setColumns(b.getRows());
-    expect(c.Get(1,3)?.value,99, reason: "c: " + c.toString());
+    expect(c.get(1,3),99, reason: "c: " + c.toString());
 
   });
 
   test('#swipe(Left) Move one peice', () {
     var b = new Board();
-    b.Set(3, 1, new Peice(1));
+    b.set(3, 1, 1);
     b.swipe(Direction.left);
-    expect(b.Get(0,1)?.value,1, reason: b.toString());
+    expect(b.get(0,1),1, reason: b.toString());
   });
 
   test('#swipe(Left) Move two peices', () {
     var b = new Board();
-    b.Set(3, 1, new Peice(1));
-    b.Set(2, 1, new Peice(2));
+    b.set(3, 1, 1);
+    b.set(2, 1, 2);
     b.swipe(Direction.left);
-    expect(b.Get(0,1)?.value,2, reason: b.toString());
-    expect(b.Get(1,1)?.value,1, reason: b.toString());
+    expect(b.get(0,1),2, reason: b.toString());
+    expect(b.get(1,1),1, reason: b.toString());
   });
 
   test('#swipe(Left) Merge two peices', () {
     var b = new Board();
-    b.Set(3, 1, new Peice(2));
-    b.Set(2, 1, new Peice(2));
+    b.set(3, 1, 2);
+    b.set(2, 1, 2);
     b.swipe(Direction.left);
-    expect(b.Get(0,1)?.value,4, reason: b.toString());
-    expect(b.Get(1,1),null, reason: b.toString());
+    expect(b.get(0,1),4, reason: b.toString());
+    expect(b.get(1,1),null, reason: b.toString());
+  });
+
+  test('#expand', () {
+    var b = new Board();
+
+    var c = b.expand(4, <int>[], false);
+    expect(c.length, 4);
+
+    c = b.expand(4, <int>[ 1 ], false);
+    expect(c.length, 4);
+
+    c = b.expand(4, <int>[ 1 ], true);
+    expect(c[0], 1);
+
+    c = b.expand(4, <int>[ 1 ], false);
+    expect(c[3], 1);
+  });
+
+  test('#removeEmpty', () {
+    var b = new Board();
+
+    var c = b.removeEmpty(<int>[]);
+    expect(c.isEmpty, true);
+
+    c = b.removeEmpty(<int>[null]);
+    expect(c.isEmpty, true);
+
+    c = b.removeEmpty(<int>[null, 1, null]);
+    expect(c.isEmpty, false);
+
+  });
+
+  test('#mergeNeighbor', () {
+    var b = new Board();
+
+    var c = b.mergeNeighbor(<int>[1,1]);
+    expect(c.length, 2);
+    expect(c[0], 2);
+    expect(c[1], null);
+
+    var c1 = <int>[1,2,1];
+    var c2 = b.mergeNeighbor(c1);
+    expect(c2.length, 3);
+    expect(c2[2], 1);
+    expect(c1, c2);
+    expect(c1 == c2, true);
   });
 
  }
