@@ -106,7 +106,16 @@ class Board {
     }
 
     var newColumns = columns.map((column) {
-      return _swipeColumn(column, left);
+      if ( ! left ) {
+        column = column.reversed.toList();
+      }
+      var swapped = swipeColumn(column);
+
+      if ( ! left ) {
+        swapped = swapped.reversed.toList();
+      }
+
+      return swapped;
     }).toList();
 
     if ( direction == Direction.up || direction == Direction.down ) {
@@ -121,20 +130,12 @@ class Board {
     return list.where((p) { return p != null; }).toList();
   }
 
-  List<int> expand(int length, List<int> list, bool left) {
+  List<int> expand(int length, List<int> list) {
     if ( list.length >= length ) {
       return list;
     }
 
-
-    if ( left ) {
-      list.length = length;
-    } else {
-      var need = length - list.length;
-      List<int> ln = [];
-      ln.length = need;
-      list.insertAll(0,ln);
-    }
+    list.length = length;
 
     return list;
   }
@@ -180,12 +181,12 @@ class Board {
     return l2;
   }
 
-  List<int> _swipeColumn(List<int> column, bool left) {
+  List<int> swipeColumn(List<int> column) {
 
     var l1 = removeEmpty(column);
     var l2 = mergeNeighbors(l1);
     var l3 = removeEmpty(l2);
-    var l4 = expand(4, l3, left);
+    var l4 = expand(4, l3);
 
     return l4;
   }

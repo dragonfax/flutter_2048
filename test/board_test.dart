@@ -64,6 +64,26 @@ void main() {
 
   });
 
+  test('#swipeColumn', () {
+    var b = new Board();
+
+    var swiped = b.swipeColumn(<int>[1,1, null, null]);
+    expect(swiped[0], 2);
+    expect(swiped[1], null);
+
+    swiped = b.swipeColumn(<int>[1,2, null, null]);
+    expect(swiped[0], 1);
+    expect(swiped[1], 2);
+
+    swiped = b.swipeColumn(<int>[null, null, 1, 2]);
+    expect(swiped[0], 1);
+    expect(swiped[1], 2);
+
+    swiped = b.swipeColumn(<int>[null, null, 1, 1]);
+    expect(swiped[0], 2);
+    expect(swiped[1], null);
+  });
+
   test('#swipe(Left) Move one peice', () {
     var b = new Board();
     b.set(3, 1, 1);
@@ -92,17 +112,14 @@ void main() {
   test('#expand', () {
     var b = new Board();
 
-    var c = b.expand(4, <int>[], false);
+    var c = b.expand(4, <int>[]);
     expect(c.length, 4);
 
-    c = b.expand(4, <int>[ 1 ], false);
+    c = b.expand(4, <int>[ 1 ]);
     expect(c.length, 4);
 
-    c = b.expand(4, <int>[ 1 ], true);
+    c = b.expand(4, <int>[ 1 ]);
     expect(c[0], 1);
-
-    c = b.expand(4, <int>[ 1 ], false);
-    expect(c[3], 1);
   });
 
   test('#removeEmpty', () {
