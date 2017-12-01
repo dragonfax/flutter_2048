@@ -1,4 +1,4 @@
-
+import 'package:flutter/material.dart';
 
 // Direction of swiping.
 // so a "left" swipe starts on the right side of the screen.
@@ -91,6 +91,8 @@ class Board {
 
   swipe(Direction direction) {
     // abstract the "direction" out of the sliding algorithm.
+
+    debugPrint("swipe " + direction.toString());
 
     List<List<int>> columns; // columns or rows.
 

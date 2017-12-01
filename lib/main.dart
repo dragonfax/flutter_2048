@@ -6,7 +6,6 @@ void main() {
   runApp(new MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -47,8 +46,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-
-
 class _MyHomePageState extends State<MyHomePage> {
   final Board board = new Board();
 
@@ -65,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   addNewPeice() {
     var p = board.randomEmptyPosition();
-    board.set(p.x,p.y,1);
+    board.set(p.x, p.y, 1);
   }
 
   @override
@@ -76,42 +73,42 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return new Scaffold(
-      appBar: new AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: new Text(widget.title),
-      ),
-      body: new Center(
-        child: new GestureDetector(
-          child: new BoardWidget(board),
-          onHorizontalDragEnd: (deets) {
-            setState(() {
-              if (deets.primaryVelocity < 0.0 ) {
-                board.swipe(Direction.left);
-              } else {
-                board.swipe(Direction.right);
-              }
-              addNewPeice();
-            });
-          },
-          onVerticalDragEnd: (deets) {
-            setState(() {
-              if (deets.primaryVelocity < 0.0 ) {
-                board.swipe(Direction.up);
-              } else {
-                board.swipe(Direction.down);
-              }
-              addNewPeice();
-            });
+    return new GestureDetector(
+      onHorizontalDragEnd: (deets) {
+        setState(() {
+          if (deets.primaryVelocity < 0.0) {
+            board.swipe(Direction.left);
+          } else {
+            board.swipe(Direction.right);
           }
-        )
+          addNewPeice();
+        });
+      },
+      onVerticalDragEnd: (deets) {
+        setState(() {
+          if (deets.primaryVelocity < 0.0) {
+            board.swipe(Direction.up);
+          } else {
+            board.swipe(Direction.down);
+          }
+          addNewPeice();
+        });
+      },
+      child: new Scaffold(
+        appBar: new AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: new Text(widget.title),
+        ),
+        body: new Center(
+          child: new BoardWidget(board),
+        ),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: newGame,
+          tooltip: 'New Game',
+          child: new Icon(Icons.restore),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: newGame,
-        tooltip: 'New Game',
-        child: new Icon(Icons.restore),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
