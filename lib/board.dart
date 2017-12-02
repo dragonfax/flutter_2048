@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 // Direction of swiping.
 // so a "left" swipe starts on the right side of the screen.
@@ -15,18 +14,38 @@ List<int> range(int start, end) {
   return new List<int>.generate(l, (i) => start + i);
 }
 
+class Piece {
+  final int value;
+
+  Piece(this.value);
+
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
+
 class Board {
 
   // Visualized, x across, y down
   // rows-first,
   // so, first dimention is y, second is x
-  List<List<int>> _grid;
+  List<List<Piece>> _grid;
 
-  set(int x, y, int p) {
+  set(int x, y, Piece p) {
+    if ( p == null ) {
+      throw "cells are non-nullable";
+    }
     _grid[y][x] = p;
   }
 
-  int get(int x, y) {
+  Piece get(int x, y) {
+    if ( x< 0 || x >= 4 ) {
+      throw "x out of bounds [$x]";
+    }
+    if ( y < 0 || y >= 4 ) {
+      throw "y out of bounds [$y]";
+    }
     return _grid[y][x];
   }
 
@@ -38,7 +57,7 @@ class Board {
     Position p;
     range(0,3).forEach((x){
       range(0,3).forEach((y){
-        if (_grid[y][x] == null ) {
+        if (_grid[y][x] == new Piece(null) ) {
           p = new Position(x,y);
         }
       });
@@ -47,7 +66,7 @@ class Board {
     return p;
   }
 
-  List<List<int>> getColumns() {
+  List<List<Piece>> getColumns() {
     return range(0,3).map((int x){
       return _grid.map((row) {
         return row[x];
@@ -55,11 +74,11 @@ class Board {
     }).toList();
   }
 
-  List<List<int>> getRows() {
+  List<List<Piece>> getRows() {
     return _grid;
   }
 
-  setColumns(List<List<int>> columns) {
+  setColumns(List<List<Piece>> columns) {
     int x = 0;
     columns.forEach((column){
       int y = 0;
@@ -71,7 +90,7 @@ class Board {
     });
   }
 
-  setRows(List<List<int>> rows) {
+  setRows(List<List<Piece>> rows) {
     _grid = rows;
   }
 
@@ -80,11 +99,11 @@ class Board {
   }
 
   reset() {
-    _grid = new List<List<int>>();
+    _grid = new List<List<Piece>>(4);
     for ( int x = 0; x < 4; x++) {
-      _grid.add(new List<int>());
+      _grid[x] = new List<Piece>(4);
       for ( int y = 0; y < 4; y++) {
-        _grid[x].add(null);
+        _grid[x][y] = new Piece(null);
       }
     }
   }
@@ -92,9 +111,7 @@ class Board {
   swipe(Direction direction) {
     // abstract the "direction" out of the sliding algorithm.
 
-    debugPrint("swipe " + direction.toString());
-
-    List<List<int>> columns; // columns or rows.
+    List<List<Piece>> columns; // columns or rows.
 
     if ( direction == Direction.up || direction == Direction.down ) {
       columns = getColumns();
@@ -128,25 +145,25 @@ class Board {
     }
   }
 
-  List<int> removeEmpty(List<int> list) {
-    return list.where((p) { return p != null; }).toList();
+  List<Piece> removeEmpty(List<Piece> list) {
+    return list.where((p) { return p.value != null; }).toList();
   }
 
-  List<int> mergeNeighbor(List<int> list ) {
+  List<Piece> mergeNeighbor(List<Piece> list ) {
     // find one neighbor next to its twin, merge them, return the new list.
     bool merged = false;
     bool mergePartnerRemoved = true;
     var l1 = range(0,list.length - 1).map((x) {
       if ( ! mergePartnerRemoved ) {
         mergePartnerRemoved = true;
-        return null;
+        return new Piece(null);
       }
 
-      if ( !merged && list.length > x + 1 && list[x] != null && list[x] == list[x + 1] ) {
+      if ( !merged && list.length > x + 1 && list[x].value != null && list[x].value == list[x + 1].value ) {
         // merge them.
         merged = true;
         mergePartnerRemoved = false;
-        return list[x] * 2;
+        return new Piece(list[x].value * 2);
       }
 
       return list[x];
@@ -159,7 +176,7 @@ class Board {
     }
   }
 
-  List<int> mergeNeighbors(List<int> list) {
+  List<Piece> mergeNeighbors(List<Piece> list) {
     var l1 = list;
     var l2 = mergeNeighbor(l1);
     while ( true ) {
@@ -173,10 +190,24 @@ class Board {
     return l2;
   }
 
-  List<int> swipeColumn(List<int> column) {
+  List<Piece> expand(int length, List<Piece> list) {
+    if ( list.length >= length ) {
+      return list;
+    }
 
-    var l1 = removeEmpty(mergeNeighbors(removeEmpty(column)));
-    l1.length = 4;
+    var needed = length - list.length;
+    var l1 = <Piece>[];
+    l1.addAll(list);
+    l1.addAll(range(0,needed - 1).map((i){
+      return new Piece(null);
+    }));
+
+    return l1;
+  }
+
+  List<Piece> swipeColumn(List<Piece> column) {
+
+    var l1 = expand(4,removeEmpty(mergeNeighbors(removeEmpty(column))));
     return l1;
   }
 }

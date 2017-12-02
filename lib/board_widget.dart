@@ -13,7 +13,7 @@ class BoardWidget extends StatefulWidget {
 
 class BoardWidgetState extends State<BoardWidget> {
 
-  Widget buildCell(int peice) {
+  Widget buildCell(Piece peice) {
     return new Container(
       margin: const EdgeInsets.all(3.0),
         padding: const EdgeInsets.all(8.0),
@@ -26,7 +26,7 @@ class BoardWidgetState extends State<BoardWidget> {
         borderRadius: const BorderRadius.all(const Radius.circular(10.0))
       ),
       child: new Text(
-        peice == null ? " " : peice.toString(),
+        peice.value == null ? " " : peice.toString(),
         style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold)
       )
     );

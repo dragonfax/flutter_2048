@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   addNewPeice() {
     var p = board.randomEmptyPosition();
-    board.set(p.x, p.y, 1);
+    board.set(p.x, p.y, new Piece(1));
   }
 
   @override
