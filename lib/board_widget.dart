@@ -50,8 +50,7 @@ class CellWidgetState extends State<CellWidget>
   }
 }
 
-class BoardWidgetState extends State<BoardWidget>
-    with SingleTickerProviderStateMixin {
+class BoardWidgetState extends State<BoardWidget> {
   Widget build(BuildContext context) {
     var cellWidth = 80.0;
 
