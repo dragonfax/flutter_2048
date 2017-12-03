@@ -217,7 +217,6 @@ class BoardWidgetState extends State<BoardWidget> {
     }
 
     return new Container(
-      color: Colors.blue,
         width: CellWidth * 4,
         height: CellWidth * 4,
         child: new Stack(children: children));
