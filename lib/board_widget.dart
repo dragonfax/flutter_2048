@@ -1,13 +1,63 @@
 import 'package:flutter/material.dart';
 import 'board.dart';
 
-class BoardWidget extends StatefulWidget {
-  final Board board;
 
-  BoardWidget(this.board);
+
+class EmptyAppearTransition extends StatefulWidget {
+  final Widget child;
+
+  EmptyAppearTransition(this.child);
 
   @override
-  BoardWidgetState createState() => new BoardWidgetState();
+  EmptyAppearState createState() => new EmptyAppearState();
+}
+
+class EmptyAppearState extends State<EmptyAppearTransition> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  EmptyAppearState() {
+    controller = new AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new ScaleTransition(
+        scale: controller,
+        child: widget.child
+    );
+
+  }
+}
+
+class NewPieceTransition extends StatefulWidget {
+  final Widget child;
+
+  NewPieceTransition(this.child);
+
+  @override
+  NewPieceState createState() => new NewPieceState();
+}
+
+class NewPieceState extends State<NewPieceTransition> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  NewPieceState() {
+    controller = new AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1000)
+    );
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    var animation = new CurvedAnimation(parent: controller, curve: Curves.elasticOut);
+
+    return new ScaleTransition(scale: animation, child: widget.child);
+  }
 }
 
 class CellWidget extends StatefulWidget {
@@ -19,21 +69,11 @@ class CellWidget extends StatefulWidget {
   CellWidgetState createState() => new CellWidgetState();
 }
 
-class CellWidgetState extends State<CellWidget>
-    with SingleTickerProviderStateMixin {
-  AnimationController controller;
-
-  CellWidgetState() {
-    controller = new AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
-    controller.forward();
-  }
+class CellWidgetState extends State<CellWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new ScaleTransition(
-        scale: controller,
-        child: new Container(
+     var container = new Container(
             margin: const EdgeInsets.all(3.0),
             padding: const EdgeInsets.all(8.0),
             width: 60.0,
@@ -46,8 +86,29 @@ class CellWidgetState extends State<CellWidget>
             child: new Text(
                 widget.piece.value == null ? " " : widget.piece.toString(),
                 style: const TextStyle(
-                    fontSize: 28.0, fontWeight: FontWeight.bold))));
+                    fontSize: 28.0, fontWeight: FontWeight.bold))
+     );
+
+
+     if ( widget.piece.source == Source.empty ) {
+       return new EmptyAppearTransition(container);
+     } else if ( widget.piece.source == Source.newPeice ) {
+       return new NewPieceTransition(container);
+     } else if ( widget.piece.source == Source.maintained ) {
+       return container;
+     } else {
+       return container;
+     }
   }
+}
+
+class BoardWidget extends StatefulWidget {
+  final Board board;
+
+  BoardWidget(this.board);
+
+  @override
+  BoardWidgetState createState() => new BoardWidgetState();
 }
 
 class BoardWidgetState extends State<BoardWidget> {

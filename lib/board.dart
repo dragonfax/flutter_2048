@@ -6,7 +6,7 @@ enum Direction { up, down, left, right }
 
 // how this peice was created.
 // from 2 peices merging. its the random new peice, or it was an empty cell.
-enum Source { merged, newPeice, empty }
+enum Source { merged, newPeice, empty, maintained }
 
 class Position {
   int x, y;
@@ -195,6 +195,10 @@ class Board {
     return l2;
   }
 
+  List<Piece> modifySource(Source source, List<Piece> list) {
+    return list.map((p1){ return new Piece(p1.value, source); }).toList();
+  }
+
   List<Piece> expand(int length, List<Piece> list) {
     if ( list.length >= length ) {
       return list;
@@ -212,7 +216,7 @@ class Board {
 
   List<Piece> swipeColumn(List<Piece> column) {
 
-    var l1 = expand(4,removeEmpty(mergeNeighbors(removeEmpty(column))));
+    var l1 = expand(4,removeEmpty(mergeNeighbors(removeEmpty(modifySource(Source.maintained,column)))));
     return l1;
   }
 }
