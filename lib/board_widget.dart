@@ -11,10 +11,35 @@ class BoardWidget extends StatefulWidget {
   BoardWidgetState createState() => new BoardWidgetState();
 }
 
-class BoardWidgetState extends State<BoardWidget> {
+class CellWidget extends StatefulWidget {
 
-  Widget buildCell(Piece peice) {
-    return new Container(
+  final Piece piece;
+
+  CellWidget(this.piece);
+
+  @override
+  CellWidgetState createState() => new CellWidgetState();
+}
+
+class CellWidgetState extends State<CellWidget> with SingleTickerProviderStateMixin {
+
+  AnimationController controller;
+
+  CellWidgetState() {
+    controller = new AnimationController(
+        duration: const Duration(milliseconds: 200),
+        vsync: this
+    );
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return
+      new ScaleTransition(
+        scale: controller,
+      child: new Container(
       margin: const EdgeInsets.all(3.0),
         padding: const EdgeInsets.all(8.0),
 
@@ -26,11 +51,14 @@ class BoardWidgetState extends State<BoardWidget> {
         borderRadius: const BorderRadius.all(const Radius.circular(10.0))
       ),
       child: new Text(
-        peice.value == null ? " " : peice.toString(),
+        widget.piece.value == null ? " " : widget.piece.toString(),
         style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold)
       )
-    );
+    ));
   }
+}
+
+class BoardWidgetState extends State<BoardWidget> with SingleTickerProviderStateMixin {
 
   Widget build(BuildContext context) {
 
@@ -39,14 +67,14 @@ class BoardWidgetState extends State<BoardWidget> {
     var children = <Widget>[];
     for ( int x = 0; x <= 3; x++ ) {
       for ( int y = 0; y <= 3; y++ ) {
-        var peice = widget.board.get(x,y);
+        var piece = widget.board.get(x,y);
         children.add(
           new Positioned(
             top: y * cellWidth,
             height: cellWidth,
             left: x * cellWidth,
             width: cellWidth,
-            child: buildCell(peice)
+            child: new CellWidget(piece)
           )
         );
       }
