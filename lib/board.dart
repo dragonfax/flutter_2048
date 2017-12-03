@@ -4,6 +4,10 @@
 // could also be considered the arrow button used to elicit the response. (left arrow)
 enum Direction { up, down, left, right }
 
+// how this peice was created.
+// from 2 peices merging. its the random new peice, or it was an empty cell.
+enum Source { merged, newPeice, empty }
+
 class Position {
   int x, y;
   Position(this.x, this.y);
@@ -16,8 +20,9 @@ List<int> range(int start, end) {
 
 class Piece {
   final int value;
+  final Source source;
 
-  Piece(this.value);
+  Piece(this.value, this.source);
 
   @override
   String toString() {
@@ -57,7 +62,7 @@ class Board {
     Position p;
     range(0,3).forEach((x){
       range(0,3).forEach((y){
-        if (_grid[y][x] == new Piece(null) ) {
+        if (_grid[y][x].value == null ) {
           p = new Position(x,y);
         }
       });
@@ -103,7 +108,7 @@ class Board {
     for ( int x = 0; x < 4; x++) {
       _grid[x] = new List<Piece>(4);
       for ( int y = 0; y < 4; y++) {
-        _grid[x][y] = new Piece(null);
+        _grid[x][y] = new Piece(null, Source.empty);
       }
     }
   }
@@ -156,14 +161,14 @@ class Board {
     var l1 = range(0,list.length - 1).map((x) {
       if ( ! mergePartnerRemoved ) {
         mergePartnerRemoved = true;
-        return new Piece(null);
+        return new Piece(null, Source.empty);
       }
 
       if ( !merged && list.length > x + 1 && list[x].value != null && list[x].value == list[x + 1].value ) {
         // merge them.
         merged = true;
         mergePartnerRemoved = false;
-        return new Piece(list[x].value * 2);
+        return new Piece(list[x].value * 2, Source.merged);
       }
 
       return list[x];
@@ -199,7 +204,7 @@ class Board {
     var l1 = <Piece>[];
     l1.addAll(list);
     l1.addAll(range(0,needed - 1).map((i){
-      return new Piece(null);
+      return new Piece(null, Source.empty);
     }));
 
     return l1;
