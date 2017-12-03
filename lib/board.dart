@@ -1,16 +1,25 @@
+import 'dart:ui';
 
 // Direction of swiping.
 // so a "left" swipe starts on the right side of the screen.
 // could also be considered the arrow button used to elicit the response. (left arrow)
 enum Direction { up, down, left, right }
 
-// how this peice was created.
-// from 2 peices merging. its the random new peice, or it was an empty cell.
-enum Source { merged, newPeice, empty, maintained }
-
 class Position {
-  int x, y;
-  Position(this.x, this.y);
+  final int x, y;
+  const Position(this.x, this.y);
+
+  Offset toOffset() {
+    return new Offset(x.toDouble(), y.toDouble());
+  }
+
+  bool equals(Position p) {
+    return x == p.x && y == p.y;
+  }
+
+  String toString() {
+    return "[$x,$y]";
+  }
 }
 
 List<int> range(int start, end) {
@@ -20,13 +29,30 @@ List<int> range(int start, end) {
 
 class Piece {
   final int value;
-  final Source source;
+  final List<Piece> source;
+  Position position;
 
-  Piece(this.value, this.source);
+  Piece(this.value, this.source, {this.position});
 
   @override
   String toString() {
     return value.toString();
+  }
+
+  bool fromNothing() {
+    return value == null && source == null;
+  }
+
+  bool newPiece() {
+    return value != null && source == null;
+  }
+
+  bool merged() {
+    return source != null && source.length == 2;
+  }
+
+  bool maintained() {
+    return source != null && source.length == 1;
   }
 }
 
@@ -42,6 +68,7 @@ class Board {
       throw "cells are non-nullable";
     }
     _grid[y][x] = p;
+    p.position = new Position(x,y);
   }
 
   Piece get(int x, y) {
@@ -88,6 +115,7 @@ class Board {
     columns.forEach((column){
       int y = 0;
       column.forEach((p){
+        p.position = new Position(x, y);
         _grid[y][x] = p;
         y++;
       });
@@ -95,8 +123,21 @@ class Board {
     });
   }
 
+  _updatePositions() {
+    int y = 0;
+    _grid.forEach((row){
+      int x = 0;
+      row.forEach((p){
+        p.position = new Position(x, y);
+        x++;
+      });
+      y++;
+    });
+   }
+
   setRows(List<List<Piece>> rows) {
     _grid = rows;
+    _updatePositions();
   }
 
   Board() {
@@ -105,10 +146,10 @@ class Board {
 
   reset() {
     _grid = new List<List<Piece>>(4);
-    for ( int x = 0; x < 4; x++) {
-      _grid[x] = new List<Piece>(4);
-      for ( int y = 0; y < 4; y++) {
-        _grid[x][y] = new Piece(null, Source.empty);
+    for ( int y = 0; y < 4; y++) {
+      _grid[y] = new List<Piece>(4);
+      for ( int x = 0; x < 4; x++) {
+        _grid[y][x] = new Piece(null, null, position: new Position(x, y));
       }
     }
   }
@@ -154,49 +195,26 @@ class Board {
     return list.where((p) { return p.value != null; }).toList();
   }
 
-  List<Piece> mergeNeighbor(List<Piece> list ) {
-    // find one neighbor next to its twin, merge them, return the new list.
-    bool merged = false;
-    bool mergePartnerRemoved = true;
-    var l1 = range(0,list.length - 1).map((x) {
-      if ( ! mergePartnerRemoved ) {
-        mergePartnerRemoved = true;
-        return new Piece(null, Source.empty);
+  List<Piece> mergeNeighbors(List<Piece> list ) {
+    var newList = <Piece>[];
+    var skip = false;
+    range(0, list.length - 1).forEach((x) {
+      if ( skip ) {
+        skip = false;
+      } else if (x == list.length - 1 || list[x].value == null || list[x + 1].value == null) {
+        // nothing special
+        newList.add(new Piece(list[x].value, <Piece>[list[x]]));
+      } else if (list[x].value == list[x + 1].value) {
+        // merge
+        newList.add(new Piece(list[x].value * 2, <Piece>[list[x], list[x + 1]]));
+        newList.add(new Piece(null, <Piece>[list[x], list[x + 1]]));
+        skip = true;
+      } else {
+        newList.add(new Piece(list[x].value, <Piece>[list[x]]));
       }
+    });
 
-      if ( !merged && list.length > x + 1 && list[x].value != null && list[x].value == list[x + 1].value ) {
-        // merge them.
-        merged = true;
-        mergePartnerRemoved = false;
-        return new Piece(list[x].value * 2, Source.merged);
-      }
-
-      return list[x];
-    }).toList();
-
-    if ( merged ) {
-      return l1;
-    } else {
-      return list;
-    }
-  }
-
-  List<Piece> mergeNeighbors(List<Piece> list) {
-    var l1 = list;
-    var l2 = mergeNeighbor(l1);
-    while ( true ) {
-      l2 = mergeNeighbor(l1);
-      if ( l1 == l2 ) {
-        break;
-      }
-      l1 = l2;
-    }
-
-    return l2;
-  }
-
-  List<Piece> modifySource(Source source, List<Piece> list) {
-    return list.map((p1){ return new Piece(p1.value, source); }).toList();
+    return newList;
   }
 
   List<Piece> expand(int length, List<Piece> list) {
@@ -208,7 +226,7 @@ class Board {
     var l1 = <Piece>[];
     l1.addAll(list);
     l1.addAll(range(0,needed - 1).map((i){
-      return new Piece(null, Source.empty);
+      return new Piece(null, null);
     }));
 
     return l1;
@@ -216,7 +234,7 @@ class Board {
 
   List<Piece> swipeColumn(List<Piece> column) {
 
-    var l1 = expand(4,removeEmpty(mergeNeighbors(removeEmpty(modifySource(Source.maintained,column)))));
+    var l1 = expand(4,removeEmpty(mergeNeighbors(removeEmpty(column))));
     return l1;
   }
 }

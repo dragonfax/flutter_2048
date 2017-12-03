@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'board.dart';
+import 'package:flutter/foundation.dart';
 
 
 
@@ -60,6 +61,76 @@ class NewPieceState extends State<NewPieceTransition> with SingleTickerProviderS
   }
 }
 
+class AbsolutePositionedTransition extends AnimatedWidget {
+  /// Uses static size for the Positioned, (not the container, like RelativePositionedTransition does)
+  const AbsolutePositionedTransition({
+    Key key,
+    @required Animation<Offset> offset,
+    @required this.size,
+    @required this.child,
+  }) : super(key: key, listenable: offset);
+
+  Animation<Offset> get offset => listenable;
+
+  /// The widget below this widget in the tree.
+  final Widget child;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint("building with [${offset.value.dx},${offset.value.dy}]");
+    return new Positioned(
+      width: size.width,
+      height: size.height,
+      top: offset.value.dy,
+      left: offset.value.dx,
+      child: child,
+    );
+  }
+}
+
+class SlideTransition extends StatefulWidget {
+  final Widget child;
+  final Position source;
+  final Position target;
+
+  SlideTransition({ @required this.child, @required this.source, @required this.target});
+
+  @override
+  SlideState createState() => new SlideState();
+}
+
+class SlideState extends State<SlideTransition> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  SlideState() {
+    controller = new AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1000)
+    );
+    controller.forward();
+  }
+
+  Widget build(BuildContext context) {
+
+    var source = new Offset(widget.source.x * CellWidth, widget.source.y * CellWidth);
+    var target = new Offset(widget.target.x * CellWidth, widget.target.y * CellWidth);
+
+    debugPrint("sliding from $source to $target");
+
+    Animation<Offset> offset = new Tween<Offset>(
+      begin: source,
+      end: target,
+    ).animate(controller);
+
+    return new AbsolutePositionedTransition(
+      child: widget.child,
+      size: new Size(CellWidth,CellWidth),
+      offset: offset
+    );
+  }
+}
+
 class CellWidget extends StatefulWidget {
   final Piece piece;
 
@@ -69,10 +140,24 @@ class CellWidget extends StatefulWidget {
   CellWidgetState createState() => new CellWidgetState();
 }
 
+const CellWidth = 60.0;
+
 class CellWidgetState extends State<CellWidget> {
+
+
+  Widget createPositioned(Position pos, Widget child) {
+    return new Positioned(
+        top: pos.y * CellWidth,
+        height: CellWidth,
+        left: pos.x * CellWidth,
+        width: CellWidth,
+        child: child
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+
      var container = new Container(
             margin: const EdgeInsets.all(3.0),
             padding: const EdgeInsets.all(8.0),
@@ -90,14 +175,23 @@ class CellWidgetState extends State<CellWidget> {
      );
 
 
-     if ( widget.piece.source == Source.empty ) {
-       return new EmptyAppearTransition(container);
-     } else if ( widget.piece.source == Source.newPeice ) {
-       return new NewPieceTransition(container);
-     } else if ( widget.piece.source == Source.maintained ) {
-       return container;
+     var position = widget.piece.position;
+     if ( widget.piece.fromNothing() ) {
+       return createPositioned(position, new EmptyAppearTransition(container));
+     } else if ( widget.piece.newPiece() ) {
+       return createPositioned(position, new NewPieceTransition(container));
+     } else if ( widget.piece.maintained() || widget.piece.merged() ) {
+       if ( ! widget.piece.position.equals(widget.piece.source[0].position) ) {
+         return new SlideTransition(
+             child: container,
+             source: widget.piece.source[0].position,
+             target: widget.piece.position
+         );
+       } else {
+         return createPositioned(position, container);
+       }
      } else {
-       return container;
+       throw "unknown piece source";
      }
   }
 }
@@ -113,24 +207,19 @@ class BoardWidget extends StatefulWidget {
 
 class BoardWidgetState extends State<BoardWidget> {
   Widget build(BuildContext context) {
-    var cellWidth = 80.0;
 
     var children = <Widget>[];
     for (int x = 0; x <= 3; x++) {
       for (int y = 0; y <= 3; y++) {
         var piece = widget.board.get(x, y);
-        children.add(new Positioned(
-            top: y * cellWidth,
-            height: cellWidth,
-            left: x * cellWidth,
-            width: cellWidth,
-            child: new CellWidget(piece)));
+        children.add(new CellWidget(piece));
       }
     }
 
     return new Container(
-        width: 80.0 * 4,
-        height: 80.0 * 4,
+      color: Colors.blue,
+        width: CellWidth * 4,
+        height: CellWidth * 4,
         child: new Stack(children: children));
   }
 }
