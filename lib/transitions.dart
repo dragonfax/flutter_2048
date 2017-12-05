@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
 import 'package:flutter/foundation.dart';
-import 'position.dart';
 
 class EmptyAppearTransition extends StatefulWidget {
   final Widget child;
@@ -84,49 +82,6 @@ class AbsolutePositionedTransition extends AnimatedWidget {
       top: offset.value.dy,
       left: offset.value.dx,
       child: child,
-    );
-  }
-}
-
-class SlideTransition extends StatefulWidget {
-  final Widget child;
-  final Position source;
-  final Position target;
-  final double cellWidth;
-
-  SlideTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth});
-
-  @override
-  SlideState createState() => new SlideState();
-}
-
-class SlideState extends State<SlideTransition> with SingleTickerProviderStateMixin {
-  AnimationController controller;
-
-  SlideState() {
-    controller = new AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 1000)
-    );
-    controller.forward();
-  }
-
-  Widget build(BuildContext context) {
-
-    var source = new Offset(widget.source.x * widget.cellWidth, widget.source.y * widget.cellWidth);
-    var target = new Offset(widget.target.x * widget.cellWidth, widget.target.y * widget.cellWidth);
-
-    // debugPrint("sliding from $source to $target");
-
-    Animation<Offset> offset = new Tween<Offset>(
-      begin: source,
-      end: target,
-    ).animate(controller);
-
-    return new AbsolutePositionedTransition(
-      child: widget.child,
-      size: new Size(widget.cellWidth,widget.cellWidth),
-      offset: offset
     );
   }
 }

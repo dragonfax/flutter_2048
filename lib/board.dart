@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'range.dart';
 import 'piece.dart';
 import 'position.dart';
@@ -173,9 +172,10 @@ class Board {
         // nothing special
         newList.add(new Piece(list[x].value, <Piece>[list[x]]));
       } else if (list[x].value == list[x + 1].value) {
+        assert(list[x].value != null);
         // merge
         newList.add(new Piece(list[x].value * 2, <Piece>[list[x], list[x + 1]]));
-        newList.add(new Piece(null, <Piece>[list[x], list[x + 1]]));
+        // newList.add(new Piece(null, <Piece>[list[x], list[x + 1]])); // no need to have these.
         skip = true;
       } else {
         newList.add(new Piece(list[x].value, <Piece>[list[x]]));

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
-import 'package:flutter/foundation.dart';
 import 'piece.dart';
 import 'position.dart';
 import 'transitions.dart';
@@ -16,9 +14,14 @@ class CellWidget extends StatefulWidget {
   CellWidgetState createState() => new CellWidgetState();
 }
 
+class CellWidgetState extends State<CellWidget>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
 
-class CellWidgetState extends State<CellWidget> {
-
+  CellWidgetState() {
+    controller = new AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1000));
+  }
 
   Widget createPositioned(Position pos, Widget child) {
     return new Positioned(
@@ -26,48 +29,53 @@ class CellWidgetState extends State<CellWidget> {
         height: CellWidth,
         left: pos.x * CellWidth,
         width: CellWidth,
-        child: child
-    );
+        child: child);
   }
 
   @override
   Widget build(BuildContext context) {
+    var container = new Container(
+        margin: const EdgeInsets.all(3.0),
+        padding: const EdgeInsets.all(8.0),
+        width: 60.0,
+        height: 60.0,
+        alignment: Alignment.center,
+        decoration: new BoxDecoration(
+            border: new Border.all(width: 2.0, color: Colors.black),
+            borderRadius: const BorderRadius.all(const Radius.circular(10.0))),
+        child: new Text(
+            widget.piece.value == null ? " " : widget.piece.value.toString(),
+            style:
+                const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold)));
 
-     var container = new Container(
-            margin: const EdgeInsets.all(3.0),
-            padding: const EdgeInsets.all(8.0),
-            width: 60.0,
-            height: 60.0,
-            alignment: Alignment.center,
-            decoration: new BoxDecoration(
-                border: new Border.all(width: 2.0, color: Colors.black),
-                borderRadius:
-                    const BorderRadius.all(const Radius.circular(10.0))),
-            child: new Text(
-                widget.piece.value == null ? " " : widget.piece.toString(),
-                style: const TextStyle(
-                    fontSize: 28.0, fontWeight: FontWeight.bold))
-     );
+    var position = widget.piece.position;
 
+    switch (widget.piece.getState()) {
+      case PieceState.nothing:
+        return createPositioned(position, new EmptyAppearTransition(container));
+      case PieceState.newPiece:
+        return createPositioned(position, new NewPieceTransition(container));
+      case PieceState.merged:
+        return slideTransition(createPositioned(position, container));
+      case PieceState.maintained:
+        return slideTransition(createPositioned(position, container));
+      default:
+        throw "unknown piece state in widget ${widget.piece}";
+    }
+  }
 
-     var position = widget.piece.position;
-     if ( widget.piece.fromNothing() ) {
-       return createPositioned(position, new EmptyAppearTransition(container));
-     } else if ( widget.piece.newPiece() ) {
-       return createPositioned(position, new NewPieceTransition(container));
-     } else if ( widget.piece.maintained() || widget.piece.merged() ) {
-       if ( ! widget.piece.position.equals(widget.piece.source[0].position) ) {
-         return new SlideTransition(
-             cellWidth: CellWidth,
-             child: container,
-             source: widget.piece.source[0].position,
-             target: widget.piece.position
-         );
-       } else {
-         return createPositioned(position, container);
-       }
-     } else {
-       throw "unknown piece source";
-     }
+  Widget slideTransition(Widget child) {
+    var dOffset = widget.piece.source[0].position.toOffset() -
+        widget.piece.position.toOffset();
+
+    Animation<Offset> offset = new Tween<Offset>(
+      begin: dOffset,
+      end: new Offset(0.0, 0.0),
+    ).animate(controller);
+
+    controller.forward();
+
+    // return new SlideTransition(position: offset, child: child);
+    return child;
   }
 }
