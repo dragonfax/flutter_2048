@@ -56,15 +56,24 @@ class CellWidgetState extends State<CellWidget>
       case PieceState.newPiece:
         return createPositioned(position, new NewPieceTransition(container));
       case PieceState.merged:
-        return slideTransition(createPositioned(position, container));
+        return slideTransition(container);
       case PieceState.maintained:
-        return slideTransition(createPositioned(position, container));
+        return slideTransition(container);
       default:
         throw "unknown piece state in widget ${widget.piece}";
     }
   }
 
   Widget slideTransition(Widget child) {
+
+    return new SlidePositionedTransition(
+        cellWidth: CellWidth,
+        child: child,
+        source: widget.piece.source[0].position,
+        target: widget.piece.position
+    );
+
+    /*
     var dOffset = widget.piece.source[0].position.toOffset() -
         widget.piece.position.toOffset();
 
@@ -75,7 +84,8 @@ class CellWidgetState extends State<CellWidget>
 
     controller.forward();
 
-    // return new SlideTransition(position: offset, child: child);
-    return child;
+    return new SlideTransition(position: offset, child: child);
+    // return child;
+    */
   }
 }
