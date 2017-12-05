@@ -1,60 +1,12 @@
 import 'dart:ui';
+import 'range.dart';
+import 'piece.dart';
+import 'position.dart';
 
 // Direction of swiping.
 // so a "left" swipe starts on the right side of the screen.
 // could also be considered the arrow button used to elicit the response. (left arrow)
 enum Direction { up, down, left, right }
-
-class Position {
-  final int x, y;
-  const Position(this.x, this.y);
-
-  Offset toOffset() {
-    return new Offset(x.toDouble(), y.toDouble());
-  }
-
-  bool equals(Position p) {
-    return x == p.x && y == p.y;
-  }
-
-  String toString() {
-    return "[$x,$y]";
-  }
-}
-
-List<int> range(int start, end) {
-  var l = end  + 1 - start;
-  return new List<int>.generate(l, (i) => start + i);
-}
-
-class Piece {
-  final int value;
-  final List<Piece> source;
-  Position position;
-
-  Piece(this.value, this.source, {this.position});
-
-  @override
-  String toString() {
-    return value.toString();
-  }
-
-  bool fromNothing() {
-    return value == null && source == null;
-  }
-
-  bool newPiece() {
-    return value != null && source == null;
-  }
-
-  bool merged() {
-    return source != null && source.length == 2;
-  }
-
-  bool maintained() {
-    return source != null && source.length == 1;
-  }
-}
 
 class Board {
 
@@ -195,6 +147,22 @@ class Board {
     return list.where((p) { return p.value != null; }).toList();
   }
 
+  List<Piece> trailingBlanks(List<Piece> list) {
+    var drop = false;
+    return list.reversed.toList().where((item) {
+      if ( item.value != null ) {
+        drop = true;
+      }
+      return ! drop;
+    }).toList().reversed.toList();
+  }
+
+  List<Piece> keepTrailingBlanks(List<Piece> list) {
+    var l = removeEmpty(list);
+    l.addAll(trailingBlanks(list));
+    return l;
+  }
+
   List<Piece> mergeNeighbors(List<Piece> list ) {
     var newList = <Piece>[];
     var skip = false;
@@ -234,7 +202,7 @@ class Board {
 
   List<Piece> swipeColumn(List<Piece> column) {
 
-    var l1 = expand(4,removeEmpty(mergeNeighbors(removeEmpty(column))));
+    var l1 = expand(4,keepTrailingBlanks(mergeNeighbors(keepTrailingBlanks(column))));
     return l1;
   }
 }
