@@ -51,13 +51,14 @@ class CellWidgetState extends State<CellWidget>
     var position = widget.piece.position;
 
     switch (widget.piece.getState()) {
-      case PieceState.nothing:
+      case PieceState.dropped:
+        // nothing
+        throw "unexpected 'dropped' state for peice";
+      case PieceState.addedEmpty:
         return createPositioned(position, new EmptyAppearTransition(container));
       case PieceState.newPiece:
         return createPositioned(position, new NewPieceTransition(container));
-      case PieceState.merged:
-        return slideTransition(container);
-      case PieceState.maintained:
+      case PieceState.moved:
         return slideTransition(container);
       default:
         throw "unknown piece state in widget ${widget.piece}";
@@ -69,7 +70,7 @@ class CellWidgetState extends State<CellWidget>
     return new SlidePositionedTransition(
         cellWidth: CellWidth,
         child: child,
-        source: widget.piece.source[0].position,
+        source: widget.piece.oldPosition,
         target: widget.piece.position
     );
 

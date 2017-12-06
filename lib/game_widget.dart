@@ -3,7 +3,6 @@ import 'board.dart';
 import 'board_widget.dart';
 import 'swipe_gesture_widget.dart';
 import 'piece.dart';
-import 'position.dart';
 
 class GameWidget extends StatefulWidget {
   GameWidget({Key key, this.title}) : super(key: key);
@@ -39,7 +38,7 @@ class GameState extends State<GameWidget> {
 
   addNewPeice() {
     var p = board.randomEmptyPosition();
-    board.set(p.x, p.y, new Piece(1, null, position: new Position(p.x, p.y)));
+    board.set(p.x, p.y, new Piece(1));
   }
 
   @override

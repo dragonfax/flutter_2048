@@ -66,12 +66,13 @@ class Board {
     columns.forEach((column){
       int y = 0;
       column.forEach((p){
-        p.position = new Position(x, y);
         _grid[y][x] = p;
         y++;
       });
       x++;
     });
+
+    _updatePositions();
   }
 
   _updatePositions() {
@@ -79,6 +80,7 @@ class Board {
     _grid.forEach((row){
       int x = 0;
       row.forEach((p){
+        p.oldPosition = p.position;
         p.position = new Position(x, y);
         x++;
       });
@@ -100,7 +102,7 @@ class Board {
     for ( int y = 0; y < 4; y++) {
       _grid[y] = new List<Piece>(4);
       for ( int x = 0; x < 4; x++) {
-        _grid[y][x] = new Piece(null, null, position: new Position(x, y));
+        _grid[y][x] = new Piece(null, position: new Position(x, y));
       }
     }
   }
@@ -170,15 +172,16 @@ class Board {
         skip = false;
       } else if (x == list.length - 1 || list[x].value == null || list[x + 1].value == null) {
         // nothing special
-        newList.add(new Piece(list[x].value, <Piece>[list[x]]));
+        newList.add(list[x]);
       } else if (list[x].value == list[x + 1].value) {
         assert(list[x].value != null);
         // merge
-        newList.add(new Piece(list[x].value * 2, <Piece>[list[x], list[x + 1]]));
-        // newList.add(new Piece(null, <Piece>[list[x], list[x + 1]])); // no need to have these.
+        var p = list[x];
+        p.value *= 2;
+        newList.add(p);
         skip = true;
       } else {
-        newList.add(new Piece(list[x].value, <Piece>[list[x]]));
+        newList.add(list[x]);
       }
     });
 
@@ -194,7 +197,7 @@ class Board {
     var l1 = <Piece>[];
     l1.addAll(list);
     l1.addAll(range(0,needed - 1).map((i){
-      return new Piece(null, null);
+      return new Piece(null);
     }));
 
     return l1;
