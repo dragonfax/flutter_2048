@@ -102,12 +102,20 @@ class SlidePositionedTransition extends StatefulWidget {
 class SlidePositionedState extends State<SlidePositionedTransition> with SingleTickerProviderStateMixin {
   AnimationController controller;
 
-  SlidePositionedState() {
+  @override
+  initState() {
+    super.initState();
     controller = new AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 1000)
     );
     controller.forward();
+  }
+
+  @override
+  dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {

@@ -51,20 +51,20 @@ class CellWidgetState extends State<CellWidget> {
 
      var position = widget.piece.position;
      if ( widget.piece.fromNothing() ) {
-       return createPositioned(position, new EmptyAppearTransition(container));
+       return createPositioned(position, container);
      } else if ( widget.piece.newPiece() ) {
        return createPositioned(position, new NewPieceTransition(container));
      } else if ( widget.piece.maintained() || widget.piece.merged() ) {
-       if ( ! widget.piece.position.equals(widget.piece.source[0].position) ) {
+       // if ( ! widget.piece.position.equals(widget.piece.source[0].position) ) {
          return new SlidePositionedTransition(
              cellWidth: CellWidth,
              child: container,
              source: widget.piece.source[0].position,
              target: widget.piece.position
          );
-       } else {
-         return createPositioned(position, container);
-       }
+       // } else {
+         // return createPositioned(position, container);
+       // }
      } else {
        throw "unknown piece source";
      }
