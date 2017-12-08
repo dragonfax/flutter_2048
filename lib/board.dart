@@ -13,6 +13,9 @@ class Board {
   // rows-first,
   // so, first dimention is y, second is x
   List<List<Piece>> _grid;
+  List<Piece> _removed = new List<Piece>();
+
+  List<Piece> get removed => _removed;
 
   set(int x, y, Piece p) {
     if ( p == null ) {
@@ -80,11 +83,17 @@ class Board {
     _grid.forEach((row){
       int x = 0;
       row.forEach((p){
+        _removed.remove(p); // just incase
         p.oldPosition = p.position;
         p.position = new Position(x, y);
         x++;
       });
       y++;
+    });
+
+    _removed.forEach((p) {
+      p.oldPosition = p.position;
+      p.position = null;
     });
    }
 
@@ -102,13 +111,17 @@ class Board {
     for ( int y = 0; y < 4; y++) {
       _grid[y] = new List<Piece>(4);
       for ( int x = 0; x < 4; x++) {
-        _grid[y][x] = new Piece(null, position: new Position(x, y));
+        _grid[y][x] = new Piece(null);
       }
     }
+    _removed = new List<Piece>();
+    _updatePositions();
   }
 
   swipe(Direction direction) {
     // abstract the "direction" out of the sliding algorithm.
+
+    _removed = new List<Piece>();
 
     List<List<Piece>> columns; // columns or rows.
 
@@ -145,7 +158,13 @@ class Board {
   }
 
   List<Piece> removeEmpty(List<Piece> list) {
-    return list.where((p) { return p.value != null; }).toList();
+    return list.where((p) {
+      if ( p.value == null ) {
+        _removed.add(p);
+        return false;
+      }
+      return true;
+    }).toList();
   }
 
   List<Piece> trailingBlanks(List<Piece> list) {
@@ -154,7 +173,11 @@ class Board {
       if ( item.value != null ) {
         drop = true;
       }
-      return ! drop;
+      if ( drop ) {
+        _removed.add(item);
+        return false;
+      }
+      return true;
     }).toList().reversed.toList();
   }
 
@@ -170,6 +193,7 @@ class Board {
     range(0, list.length - 1).forEach((x) {
       if ( skip ) {
         skip = false;
+        _removed.add(list[x]);
       } else if (x == list.length - 1 || list[x].value == null || list[x + 1].value == null) {
         // nothing special
         newList.add(list[x]);
@@ -198,7 +222,7 @@ class Board {
     l1.addAll(list);
     l1.addAll(range(0,needed - 1).map((i){
       return new Piece(null);
-    }));
+    }).toList());
 
     return l1;
   }

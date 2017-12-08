@@ -38,10 +38,12 @@ class Piece {
 
   PieceState getState() {
     if ( oldPosition == null && value == null ) {
+      assert(position != null);
       return PieceState.addedEmpty;
     } else if ( oldPosition == null && value != null ) {
       return PieceState.newPiece;
     } else if ( position == null ) {
+      assert(oldPosition != null);
       return PieceState.dropped;
     } else if ( position != null && oldPosition != null ) {
       return PieceState.moved;

@@ -23,6 +23,11 @@ class BoardWidgetState extends State<BoardWidget> {
       }
     }
 
+    /*
+    children.addAll(widget.board.removed.map((p){
+      return new CellWidget(p);
+    }).toList()); */
+
     return new Container(
         width: CellWidth * 4,
         height: CellWidth * 4,

@@ -2,6 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'position.dart';
 
+class DisappearTransition extends StatefulWidget {
+  final Widget child;
+
+  DisappearTransition(this.child);
+
+  @override
+  DisappearState createState() => new DisappearState();
+}
+
+class DisappearState extends State<DisappearTransition> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  DisappearState() {
+    controller = new AnimationController(
+      duration: const Duration(milliseconds: 1000), vsync: this
+    );
+    controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new ScaleTransition(
+      scale: controller,
+      child: widget.child
+    );
+  }
+}
+
 class EmptyAppearTransition extends StatefulWidget {
   final Widget child;
 

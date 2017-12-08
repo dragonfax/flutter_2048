@@ -52,14 +52,18 @@ class CellWidgetState extends State<CellWidget>
 
     switch (widget.piece.getState()) {
       case PieceState.dropped:
-        // nothing
-        throw "unexpected 'dropped' state for peice";
+        assert(widget.piece.oldPosition != null);
+        // return createPositioned(widget.piece.oldPosition, new DisappearTransition(container));
+        return createPositioned(widget.piece.oldPosition, container);
       case PieceState.addedEmpty:
         return createPositioned(position, new EmptyAppearTransition(container));
+        // return createPositioned(position, container);
       case PieceState.newPiece:
-        return createPositioned(position, new NewPieceTransition(container));
+        // return createPositioned(position, new NewPieceTransition(container));
+        return createPositioned(position, container);
       case PieceState.moved:
-        return slideTransition(container);
+        // return slideTransition(container);
+        return createPositioned(position, container);
       default:
         throw "unknown piece state in widget ${widget.piece}";
     }
