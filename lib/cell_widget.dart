@@ -38,6 +38,7 @@ class CellWidgetState extends State<CellWidget> {
             height: 60.0,
             alignment: Alignment.center,
             decoration: new BoxDecoration(
+              color: Colors.white,
                 border: new Border.all(width: 2.0, color: Colors.black),
                 borderRadius:
                     const BorderRadius.all(const Radius.circular(10.0))),
