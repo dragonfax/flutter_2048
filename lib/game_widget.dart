@@ -25,6 +25,7 @@ class GameWidget extends StatefulWidget {
 
 class GameState extends State<GameWidget> {
   final Board board = new Board();
+  final Board background = new Board();
 
   GameState() {
     addNewPeice();
@@ -74,7 +75,12 @@ class GameState extends State<GameWidget> {
           title: new Text(widget.title),
         ),
         body: new Center(
-          child: new BoardWidget(board),
+          child: new Stack(
+            children: [
+              new BoardWidget(background),
+              new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board)),
+            ]
+          )
         ),
         floatingActionButton: new FloatingActionButton(
           onPressed: newGame,
