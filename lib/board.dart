@@ -9,41 +9,41 @@ enum Direction { up, down, left, right }
 
 class Board {
 
-  // Visualized, x across, y down
-  // rows-first,
-  // so, first dimention is y, second is x
-  List<List<Piece>> _grid;
-  List<Piece> _removed = new List<Piece>();
+  List<Piece> _bag;
 
-  List<Piece> get removed => _removed;
-
-  set(int x, y, Piece p) {
-    if ( p == null ) {
-      throw "cells are non-nullable";
+  add(Piece p) {
+    if ( get(p.position.x, p.position.y) != null ) {
+      throw "colliding pieces";
     }
-    _grid[y][x] = p;
-    p.position = new Position(x,y);
+    _bag.add(p);
   }
 
   Piece get(int x, y) {
-    if ( x< 0 || x >= 4 ) {
-      throw "x out of bounds [$x]";
+    var p = _bag.firstWhere((p){ return p.position.x == x && p.position.y == y; });
+    if ( p == null ) {
+      p = new Piece(null, position: new Position(x, y));
+      add(p);
     }
-    if ( y < 0 || y >= 4 ) {
-      throw "y out of bounds [$y]";
-    }
-    return _grid[y][x];
+    return p
+  }
+
+  clear() {
+    _bag.clear();
+  }
+
+  removeUnsued() {
+    _bag = _bag.where((p) { return p.position != null; }).toList();
   }
 
   String toString() {
-    return _grid.toString();
+    return _bag.toString();
   }
 
   Position randomEmptyPosition() {
     Position p;
     range(0,3).forEach((x){
       range(0,3).forEach((y){
-        if (_grid[y][x].value == null ) {
+        if (get(x,y) == null ) {
           p = new Position(x,y);
         }
       });
@@ -52,110 +52,80 @@ class Board {
     return p;
   }
 
-  List<List<Piece>> getColumns() {
+  List<Piece> getColumn(int x) {
+    return range(0,3).map((int y){
+      return get(x,y);
+    }).toList();
+  }
+
+  List<Piece>> getRow(int y) {
     return range(0,3).map((int x){
-      return _grid.map((row) {
-        return row[x];
-      }).toList();
+      return get(x,y);
     }).toList();
   }
 
-  List<List<Piece>> getRows() {
-    return _grid;
-  }
+  // works for a column or a row. but assumes same direction (to the left).
+  swipeColumn(List<Piece> column) {
 
-  setColumns(List<List<Piece>> columns) {
-    int x = 0;
-    columns.forEach((column){
-      int y = 0;
-      column.forEach((p){
-        _grid[y][x] = p;
-        y++;
-      });
-      x++;
-    });
-
-    _updatePositions();
-  }
-
-  _updatePositions() {
-    int y = 0;
-    _grid.forEach((row){
-      int x = 0;
-      row.forEach((p){
-        _removed.remove(p); // just incase
-        p.oldPosition = p.position;
-        p.position = new Position(x, y);
-        x++;
-      });
-      y++;
-    });
-
-    _removed.forEach((p) {
-      p.oldPosition = p.position;
-      p.position = null;
-    });
-   }
-
-  setRows(List<List<Piece>> rows) {
-    _grid = rows;
-    _updatePositions();
-  }
-
-  Board() {
-    reset();
-  }
-
-  reset() {
-    _grid = new List<List<Piece>>(4);
-    for ( int y = 0; y < 4; y++) {
-      _grid[y] = new List<Piece>(4);
-      for ( int x = 0; x < 4; x++) {
-        _grid[y][x] = new Piece(null);
+    while ( true ) {
+      slideLeft(column) // including buried nulls
+      var merged = mergeNeighbors(column);
+      // until no neighbors can merge
+      if ( ! merged ) {
+        break;
       }
+      // always keep far right nulls
     }
-    _removed = new List<Piece>();
-    _updatePositions();
+
+    // bump back up to 4 pieces
+    fill(column);
   }
 
-  swipe(Direction direction) {
-    // abstract the "direction" out of the sliding algorithm.
-
-    _removed = new List<Piece>();
-
-    List<List<Piece>> columns; // columns or rows.
-
-    if ( direction == Direction.up || direction == Direction.down ) {
-      columns = getColumns();
-    } else {
-      columns = getRows();
+  slideLeft(List<Piece> column) {
+    while ( slideOneLeft(column) ) {
     }
+  }
 
-    bool left = false;
-    if ( direction == Direction.up || direction == Direction.left ) {
-      left = true;
-    }
+  bool slideOneLeft(List<Piece> column) {
+    var y = column[0].position.y;
 
-    var newColumns = columns.map((column) {
-      if ( ! left ) {
-        column = column.reversed.toList();
-      }
-      var swapped = swipeColumn(column);
+    var done = false;
+    range(1,3).firstWhere((x){
+      var p = get(x, y);
 
-      if ( ! left ) {
-        swapped = swapped.reversed.toList();
+      // ignore nulls and blanks
+      if ( p != null || p.value != null ) {
+        var pp = get(x - 1, y);
+
+        // if previous peice is null or blank.
+        if ( pp == null ) {
+          p.position = new Position(x-1, y);
+
+          return true;
+
+        } else if ( pp.value == null ) {
+          pp.position = null;
+          p.position = new Position(x-1, y);
+
+          return true;
+        }
       }
 
-      return swapped;
-    }).toList();
-
-    if ( direction == Direction.up || direction == Direction.down ) {
-      setColumns(newColumns);
-    }
-    else {
-      setRows(newColumns);
-    }
+      return false;
+    });
   }
+
+  fill(List<Piece> column) {
+    var y = column[0].position.y;
+
+    // find the last item, and add any needed
+    range(0,3).forEach((x) {
+      if ( get(x,y) != null ) {
+        add(new Piece(null, position: new Position(x,y)));
+      }
+    });
+  }
+
 
   List<Piece> removeEmpty(List<Piece> list) {
     return list.where((p) {
@@ -227,9 +197,41 @@ class Board {
     return l1;
   }
 
-  List<Piece> swipeColumn(List<Piece> column) {
 
-    var l1 = expand(4,keepTrailingBlanks(mergeNeighbors(keepTrailingBlanks(column))));
-    return l1;
+  swipe(Direction direction) {
+    // abstract the "direction" out of the sliding algorithm.
+
+    List<List<Piece>> columns; // columns or rows.
+
+    if ( direction == Direction.up || direction == Direction.down ) {
+      columns = getColumns();
+    } else {
+      columns = getRows();
+    }
+
+    bool left = false;
+    if ( direction == Direction.up || direction == Direction.left ) {
+      left = true;
+    }
+
+    var newColumns = columns.map((column) {
+      if ( ! left ) {
+        column = column.reversed.toList();
+      }
+      var swapped = swipeColumn(column);
+
+      if ( ! left ) {
+        swapped = swapped.reversed.toList();
+      }
+
+      return swapped;
+    }).toList();
+
+    if ( direction == Direction.up || direction == Direction.down ) {
+      setColumns(newColumns);
+    }
+    else {
+      setRows(newColumns);
+    }
   }
 }
