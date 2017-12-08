@@ -12,27 +12,17 @@ class Board {
   List<Piece> _bag;
 
   add(Piece p) {
-    if ( get(p.position.x, p.position.y) != null ) {
-      throw "colliding pieces";
-    }
+    assert(p != null);
+    assert(p.value != null);
     _bag.add(p);
   }
 
   Piece get(int x, y) {
-    var p = _bag.firstWhere((p){ return p.position.x == x && p.position.y == y; });
-    if ( p == null ) {
-      p = new Piece(null, position: new Position(x, y));
-      add(p);
-    }
-    return p
+    return _bag.firstWhere((p){ return p.position.x == x && p.position.y == y; });
   }
 
   clear() {
     _bag.clear();
-  }
-
-  removeUnsued() {
-    _bag = _bag.where((p) { return p.position != null; }).toList();
   }
 
   String toString() {
@@ -52,161 +42,104 @@ class Board {
     return p;
   }
 
-  List<Piece> getColumn(int x) {
-    return range(0,3).map((int y){
-      return get(x,y);
-    }).toList();
-  }
 
-  List<Piece>> getRow(int y) {
-    return range(0,3).map((int x){
-      return get(x,y);
-    }).toList();
-  }
+  static const rangeX = const[0,1,2,3];
+  static const rangeXreverse = const[3,2,1,0];
 
-  // works for a column or a row. but assumes same direction (to the left).
-  swipeColumn(List<Piece> column) {
-
-    while ( true ) {
-      slideLeft(column) // including buried nulls
-      var merged = mergeNeighbors(column);
-      // until no neighbors can merge
-      if ( ! merged ) {
-        break;
-      }
-      // always keep far right nulls
-    }
-
-    // bump back up to 4 pieces
-    fill(column);
-  }
-
-  slideLeft(List<Piece> column) {
-    while ( slideOneLeft(column) ) {
+  int getX(Piece p, bool up) {
+    if ( !up ) {
+      return p.position.x;
+    } else {
+      return p.position.y;
     }
   }
 
-  bool slideOneLeft(List<Piece> column) {
-    var y = column[0].position.y;
-
-    var done = false;
-    range(1,3).firstWhere((x){
-      var p = get(x, y);
-
-      // ignore nulls and blanks
-      if ( p != null || p.value != null ) {
-        var pp = get(x - 1, y);
-
-        // if previous peice is null or blank.
-        if ( pp == null ) {
-          p.position = new Position(x-1, y);
-
-          return true;
-
-        } else if ( pp.value == null ) {
-          pp.position = null;
-          p.position = new Position(x-1, y);
-
-          return true;
-        }
-      }
-
-      return false;
-    });
+  setX(Piece p, bool up, int x) {
+    if ( !up ) {
+      p.position = new Position(x, p.position.y);
+    } else {
+      p.position = new Position(p.position.x, x);
+    }
   }
 
-  fill(List<Piece> column) {
-    var y = column[0].position.y;
-
-    // find the last item, and add any needed
-    range(0,3).forEach((x) {
-      if ( get(x,y) != null ) {
-        add(new Piece(null, position: new Position(x,y)));
-      }
-    });
+  Piece getWithUp(int x, y, bool up) {
+    if ( up ) {
+      return get(y, x);
+    } else {
+      return get(x, y);
+    }
   }
 
+  Position newPositionWithUp(int x, y, bool up) {
+    if ( up ) {
+      return new Position(y, x);
+    } else {
+      return new Position(x, y);
+    }
+  }
 
-  List<Piece> removeEmpty(List<Piece> list) {
-    return list.where((p) {
-      if ( p.value == null ) {
-        _removed.add(p);
+  // swiping to the left.
+  slidePieceLeft(Piece p, bool left, up) {
+
+    List<int> directionReverse;
+    if ( left ) {
+      directionReverse = rangeXreverse;
+    } else {
+      directionReverse = rangeX;
+    }
+
+    if ( p.position.x == rangeX[0] ){
+      return;
+    }
+
+    var started = false;
+    rangeXreverse.firstWhere((ox){
+      if ( ox == getX(p,up) ) {
+        started = true;
         return false;
       }
-      return true;
-    }).toList();
-  }
-
-  List<Piece> trailingBlanks(List<Piece> list) {
-    var drop = false;
-    return list.reversed.toList().where((item) {
-      if ( item.value != null ) {
-        drop = true;
-      }
-      if ( drop ) {
-        _removed.add(item);
+      if ( ! started ) {
         return false;
       }
-      return true;
-    }).toList().reversed.toList();
-  }
 
-  List<Piece> keepTrailingBlanks(List<Piece> list) {
-    var l = removeEmpty(list);
-    l.addAll(trailingBlanks(list));
-    return l;
-  }
-
-  List<Piece> mergeNeighbors(List<Piece> list ) {
-    var newList = <Piece>[];
-    var skip = false;
-    range(0, list.length - 1).forEach((x) {
-      if ( skip ) {
-        skip = false;
-        _removed.add(list[x]);
-      } else if (x == list.length - 1 || list[x].value == null || list[x + 1].value == null) {
-        // nothing special
-        newList.add(list[x]);
-      } else if (list[x].value == list[x + 1].value) {
-        assert(list[x].value != null);
+      var y = getX(p,!up);
+      var op = getWithUp(ox,y, up);
+      if ( op == null ) {
+        p.position = newPositionWithUp(ox,y, up);
+        return false;
+      } else if ( op.value == p.value ) {
         // merge
-        var p = list[x];
-        p.value *= 2;
-        newList.add(p);
-        skip = true;
-      } else {
-        newList.add(list[x]);
+        op.value *= 2;
+        p.position = null;
+        return true;
       }
+      // hit another value piece
+      return true;
     });
-
-    return newList;
   }
 
-  List<Piece> expand(int length, List<Piece> list) {
-    if ( list.length >= length ) {
-      return list;
+  slideColumn(int y, bool left, up) {
+
+    if ( p.position.x == rangeX[0] ){
+      return;
     }
 
-    var needed = length - list.length;
-    var l1 = <Piece>[];
-    l1.addAll(list);
-    l1.addAll(range(0,needed - 1).map((i){
-      return new Piece(null);
-    }).toList());
-
-    return l1;
+    rangeX.forEach((x){
+      var p = get(x, y);
+      if ( p != null ) {
+        slidePieceLeft(p, left, up);
+      }
+    });
   }
-
 
   swipe(Direction direction) {
     // abstract the "direction" out of the sliding algorithm.
 
-    List<List<Piece>> columns; // columns or rows.
-
+    bool columns;
     if ( direction == Direction.up || direction == Direction.down ) {
-      columns = getColumns();
+      columns = true;
     } else {
-      columns = getRows();
+      columns = false;
     }
 
     bool left = false;
@@ -214,24 +147,12 @@ class Board {
       left = true;
     }
 
-    var newColumns = columns.map((column) {
-      if ( ! left ) {
-        column = column.reversed.toList();
+    range(0,3).forEach((y) {
+      if ( left ) {
+        slideColumn(y, left, columns);
+      } else {
+        // TODO
       }
-      var swapped = swipeColumn(column);
-
-      if ( ! left ) {
-        swapped = swapped.reversed.toList();
-      }
-
-      return swapped;
-    }).toList();
-
-    if ( direction == Direction.up || direction == Direction.down ) {
-      setColumns(newColumns);
-    }
-    else {
-      setRows(newColumns);
-    }
+    });
   }
 }

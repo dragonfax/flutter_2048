@@ -31,14 +31,14 @@ class GameState extends State<GameWidget> {
 
   newGame() {
     setState(() {
-      board.reset();
+      board.clear();
       addNewPeice();
     });
   }
 
   addNewPeice() {
-    var p = board.randomEmptyPosition();
-    board.set(p.x, p.y, new Piece(1));
+    var pos = board.randomEmptyPosition();
+    board.add(new Piece(1, position: pos));
   }
 
   @override
