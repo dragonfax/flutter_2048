@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
-import 'package:flutter/foundation.dart';
 import 'piece.dart';
 import 'position.dart';
 import 'transitions.dart';
@@ -57,7 +55,7 @@ class CellWidgetState extends State<CellWidget> {
        return createPositioned(position, new NewPieceTransition(container));
      } else if ( widget.piece.maintained() || widget.piece.merged() ) {
        if ( ! widget.piece.position.equals(widget.piece.source[0].position) ) {
-         return new SlideTransition(
+         return new SlidePositionedTransition(
              cellWidth: CellWidth,
              child: container,
              source: widget.piece.source[0].position,

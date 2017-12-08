@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
 import 'package:flutter/foundation.dart';
 import 'position.dart';
 
@@ -88,22 +87,22 @@ class AbsolutePositionedTransition extends AnimatedWidget {
   }
 }
 
-class SlideTransition extends StatefulWidget {
+class SlidePositionedTransition extends StatefulWidget {
   final Widget child;
   final Position source;
   final Position target;
   final double cellWidth;
 
-  SlideTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth});
+  SlidePositionedTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth});
 
   @override
-  SlideState createState() => new SlideState();
+  SlidePositionedState createState() => new SlidePositionedState();
 }
 
-class SlideState extends State<SlideTransition> with SingleTickerProviderStateMixin {
+class SlidePositionedState extends State<SlidePositionedTransition> with SingleTickerProviderStateMixin {
   AnimationController controller;
 
-  SlideState() {
+  SlidePositionedState() {
     controller = new AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 1000)
