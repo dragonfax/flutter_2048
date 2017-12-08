@@ -77,8 +77,8 @@ class GameState extends State<GameWidget> {
         body: new Center(
           child: new Stack(
             children: [
-              new BoardWidget(background),
-              new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board)),
+              new BoardWidget(background, true),
+              new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board, false)),
             ]
           )
         ),

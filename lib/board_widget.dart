@@ -5,8 +5,9 @@ import 'cell_widget.dart';
 
 class BoardWidget extends StatefulWidget {
   final Board board;
+  final bool background;
 
-  BoardWidget(this.board);
+  BoardWidget(this.board, this.background);
 
   @override
   BoardWidgetState createState() => new BoardWidgetState();
@@ -19,7 +20,9 @@ class BoardWidgetState extends State<BoardWidget> {
     for (int x = 0; x <= 3; x++) {
       for (int y = 0; y <= 3; y++) {
         var piece = widget.board.get(x, y);
-        children.add(new CellWidget(piece));
+        if ( widget.background || ( piece != null && piece.value != null ) ) {
+          children.add(new CellWidget(piece));
+        }
       }
     }
 
