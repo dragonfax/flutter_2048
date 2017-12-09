@@ -5,18 +5,10 @@ import 'transitions.dart';
 
 const CellWidth = 60.0;
 
-class CellWidget extends StatefulWidget {
+class CellWidget extends StatelessWidget {
   final Piece piece;
 
   CellWidget(this.piece);
-
-  @override
-  CellWidgetState createState() => new CellWidgetState();
-}
-
-
-class CellWidgetState extends State<CellWidget> {
-
 
   Widget createPositioned(Position pos, Widget child) {
     return new Positioned(
@@ -43,28 +35,24 @@ class CellWidgetState extends State<CellWidget> {
                 borderRadius:
                     const BorderRadius.all(const Radius.circular(10.0))),
             child: new Text(
-                widget.piece.value == null ? " " : widget.piece.toString(),
+                piece.value == null ? " " : piece.toString(),
                 style: const TextStyle(
                     fontSize: 28.0, fontWeight: FontWeight.bold))
      );
 
 
-     var position = widget.piece.position;
-     if ( widget.piece.fromNothing() ) {
+     var position = piece.position;
+     if ( piece.fromNothing() ) {
        return createPositioned(position, container);
-     } else if ( widget.piece.newPiece() ) {
+     } else if ( piece.newPiece() ) {
        return createPositioned(position, new NewPieceTransition(container));
-     } else if ( widget.piece.maintained() || widget.piece.merged() ) {
-       // if ( ! widget.piece.position.equals(widget.piece.source[0].position) ) {
-         return new SlidePositionedTransition(
-             cellWidth: CellWidth,
-             child: container,
-             source: widget.piece.source[0].position,
-             target: widget.piece.position
-         );
-       // } else {
-         // return createPositioned(position, container);
-       // }
+     } else if ( piece.maintained() || piece.merged() ) {
+       return new SlidePositionedTransition(
+           cellWidth: CellWidth,
+           child: container,
+           source: piece.source[0].position,
+           target: piece.position
+       );
      } else {
        throw "unknown piece source";
      }
