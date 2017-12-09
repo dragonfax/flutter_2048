@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'position.dart';
+import 'piece.dart';
+
+class PieceKey extends ValueKey<Piece> {
+  PieceKey(Piece p): super(p);
+}
 
 class EmptyAppearTransition extends StatefulWidget {
   final Widget child;
+  final Piece piece;
 
-  EmptyAppearTransition(this.child);
+  EmptyAppearTransition(this.child, this.piece);
 
   @override
   EmptyAppearState createState() => new EmptyAppearState();
@@ -14,15 +20,26 @@ class EmptyAppearTransition extends StatefulWidget {
 class EmptyAppearState extends State<EmptyAppearTransition> with SingleTickerProviderStateMixin {
   AnimationController controller;
 
-  EmptyAppearState() {
+  @override
+  initState() {
+    super.initState();
     controller = new AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
+    debugPrint("starting empty animation");
     controller.forward();
   }
 
   @override
+  dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return new ScaleTransition(
+        key: new PieceKey(widget.piece),
         scale: controller,
         child: widget.child
     );
@@ -32,30 +49,42 @@ class EmptyAppearState extends State<EmptyAppearTransition> with SingleTickerPro
 
 class NewPieceTransition extends StatefulWidget {
   final Widget child;
+  final Piece piece;
 
-  NewPieceTransition(this.child);
+  NewPieceTransition(this.child, this.piece);
 
   @override
   NewPieceState createState() => new NewPieceState();
 }
 
+
 class NewPieceState extends State<NewPieceTransition> with SingleTickerProviderStateMixin {
   AnimationController controller;
 
-  NewPieceState() {
+  @override
+  initState() {
+    super.initState();
     controller = new AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 1000)
     );
+    debugPrint("starting new piece animation");
     controller.forward();
   }
+
+  @override
+  dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
     var animation = new CurvedAnimation(parent: controller, curve: Curves.elasticOut);
 
-    return new ScaleTransition(scale: animation, child: widget.child);
+    return new ScaleTransition(key: new PieceKey(widget.piece), scale: animation, child: widget.child);
   }
 }
 
@@ -92,8 +121,9 @@ class SlidePositionedTransition extends StatefulWidget {
   final Position source;
   final Position target;
   final double cellWidth;
+  final Piece piece;
 
-  SlidePositionedTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth});
+  SlidePositionedTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth, @required this.piece});
 
   @override
   SlidePositionedState createState() => new SlidePositionedState();
@@ -109,6 +139,7 @@ class SlidePositionedState extends State<SlidePositionedTransition> with SingleT
         vsync: this,
         duration: const Duration(milliseconds: 1000)
     );
+    debugPrint("starting animation to ${widget.target}.");
     controller.forward();
   }
 
@@ -130,7 +161,10 @@ class SlidePositionedState extends State<SlidePositionedTransition> with SingleT
       end: target,
     ).animate(controller);
 
+    debugPrint("returning new absolute position transition to $target from $source.");
     return new AbsolutePositionedTransition(
+        // key: new PieceKey(widget.piece),
+      key: new UniqueKey(),
       child: widget.child,
       size: new Size(widget.cellWidth,widget.cellWidth),
       offset: offset

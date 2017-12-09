@@ -8,7 +8,7 @@ const CellWidth = 60.0;
 class CellWidget extends StatelessWidget {
   final Piece piece;
 
-  CellWidget(this.piece);
+  CellWidget(this.piece): super(key: new PieceKey(piece));
 
   Widget createPositioned(Position pos, Widget child) {
     return new Positioned(
@@ -45,13 +45,14 @@ class CellWidget extends StatelessWidget {
      if ( piece.fromNothing() ) {
        return createPositioned(position, container);
      } else if ( piece.newPiece() ) {
-       return createPositioned(position, new NewPieceTransition(container));
+       return createPositioned(position, new NewPieceTransition(container, piece));
      } else if ( piece.maintained() || piece.merged() ) {
        return new SlidePositionedTransition(
            cellWidth: CellWidth,
            child: container,
            source: piece.source[0].position,
-           target: piece.position
+           target: piece.position,
+           piece: piece
        );
      } else {
        throw "unknown piece source";
