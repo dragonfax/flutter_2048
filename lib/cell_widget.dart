@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'position.dart';
 import 'swipe_mechanic.dart';
-// import 'transitions.dart';
+import 'transitions.dart';
 
 const CellWidth = 60.0;
 
@@ -44,17 +44,22 @@ class CellWidget extends StatelessWidget {
 
      // var position = piece.current;
      // if ( piece.fromNothing() ) {
-       return createPositioned(position, container);
+       // return createPositioned(position, container);
      /*} else if ( piece.newPiece() ) {
        return createPositioned(position, new NewPieceTransition(container, piece));
      } else if ( piece.maintained() || piece.merged() ) {
-       return new SlidePositionedTransition(
-           cellWidth: CellWidth,
-           child: container,
-           source: piece.source[0].position,
-           target: piece.position,
-           piece: piece
-       );
+       */
+      if ( piece == null ) {
+        return createPositioned(position, container);
+      } else {
+        return new SlidePositionedTransition(
+          cellWidth: CellWidth,
+          child: container,
+          source: piece.source,
+          target: piece.current,
+        );
+      }
+       /*
      } else {
        throw "unknown piece source";
      } */

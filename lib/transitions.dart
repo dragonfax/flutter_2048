@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'position.dart';
 
-class PieceKey extends ValueKey<Piece> {
-  PieceKey(Piece p): super(p);
+/*
+class CellKey extends ValueKey<Cell> {
+  CellKey(Cell p): super(p);
 }
 
 class EmptyAppearTransition extends StatefulWidget {
@@ -86,6 +87,7 @@ class NewPieceState extends State<NewPieceTransition> with SingleTickerProviderS
     return new ScaleTransition(key: new PieceKey(widget.piece), scale: animation, child: widget.child);
   }
 }
+*/
 
 class AbsolutePositionedTransition extends AnimatedWidget {
   /// Uses static size for the Positioned, (not the container, like RelativePositionedTransition does)
@@ -120,9 +122,8 @@ class SlidePositionedTransition extends StatefulWidget {
   final Position source;
   final Position target;
   final double cellWidth;
-  final Piece piece;
 
-  SlidePositionedTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth, @required this.piece});
+  SlidePositionedTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth});
 
   @override
   SlidePositionedState createState() => new SlidePositionedState();
