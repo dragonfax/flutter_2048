@@ -189,19 +189,20 @@ List<List<Cell>> rotate(List<List<Cell>> matrix) {
   // create new empty matrix
   List<List<Cell>> newMatrix = new List(4);
   range(0, 3).forEach((y) {
-    newMatrix.add(new List(4));
+    newMatrix[y] = new List(4);
   });
 
   var y = 0;
   for ( var lc in matrix ) {
     var x = 0;
     for ( var c in lc ) {
-
-      var source2 = rotatePosition(c.source);
-      var current2 = rotatePosition(c.current);
-      var c2 = new Cell(c.value,source2,current2);
-      var p2 = rotatePosition(new Position(x, y));
-      newMatrix[p2.y][p2.x] = c2;
+      if ( c != null ) {
+        var p2 = rotatePosition(new Position(x, y));
+        var source2 = rotatePosition(c.source);
+        var current2 = c.current == null ? null : rotatePosition(c.current);
+        var c2 = new Cell(c.value,source2,current2);
+        newMatrix[p2.y][p2.x] = c2;
+      }
       x += 1;
     }
     y += 1;
