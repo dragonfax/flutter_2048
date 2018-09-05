@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'game_widget.dart';
-import 'package:scheduled_notifications/scheduled_notifications.dart';
-import 'dart:async';
 
 
 void main() {
@@ -10,15 +8,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
 
-  MyApp() {
-    ScheduledNotifications.scheduleNotification(
-        new DateTime.now().add(new Duration(seconds: 5)).millisecondsSinceEpoch,
-        "Ticker text",
-        "Content title",
-        "Content");
-  }
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
