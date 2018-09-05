@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
 import 'board_widget.dart';
 import 'swipe_gesture_widget.dart';
-import 'piece.dart';
-import 'position.dart';
 
 class GameWidget extends StatefulWidget {
   GameWidget({Key key, this.title}) : super(key: key);
@@ -25,22 +22,16 @@ class GameWidget extends StatefulWidget {
 
 class GameState extends State<GameWidget> {
   final Board board = new Board();
-  final Board background = new Board();
 
   GameState() {
-    addNewPeice();
+    board.addNewPeice();
   }
 
   newGame() {
     setState(() {
       board.reset();
-      addNewPeice();
+      board.addNewPeice();
     });
-  }
-
-  addNewPeice() {
-    var p = board.randomEmptyPosition();
-    board.set(p.x, p.y, new Piece(1, null, position: new Position(p.x, p.y)));
   }
 
   @override
@@ -49,25 +40,25 @@ class GameState extends State<GameWidget> {
       onSwipeUp: () {
         setState((){
           board.swipe(Direction.up);
-          addNewPeice();
+          board.addNewPeice();
         });
       },
       onSwipeDown: () {
         setState((){
           board.swipe(Direction.down);
-          addNewPeice();
+          board.addNewPeice();
         });
       },
       onSwipeLeft: () {
         setState((){
           board.swipe(Direction.left);
-          addNewPeice();
+          board.addNewPeice();
         });
       },
       onSwipeRight: () {
         setState((){
           board.swipe(Direction.right);
-          addNewPeice();
+          board.addNewPeice();
         });
       },
       child: new Scaffold(
@@ -77,7 +68,7 @@ class GameState extends State<GameWidget> {
         body: new Center(
           child: new Stack(
             children: [
-              new BoardWidget(background, true),
+              // new BoardWidget(background, true),
               new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board, false)),
             ]
           )

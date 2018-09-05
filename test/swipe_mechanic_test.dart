@@ -23,12 +23,6 @@ void main() {
     });
   });
 
-  group("matrix", () {
-    test("construct", () {
-      new Matrix([]);
-    });
-  });
-
   group("strip nulls", () {
     test("strip from empty",(){
       var r = stripNulls([]);
@@ -97,6 +91,22 @@ void main() {
       expect(m2.length, equals(1));
       expect(m2[0].length, equals(4));
       print (m2);
+      expect(m2[0][3].value, equals(1));
+    });
+  });
+
+  group("swipe right", () {
+    test("swipe nothing right", () {
+      List<List<Cell>> m = [];
+      var m2 = swipeRight(m);
+      expect(m2.length, equals(0));
+    });
+
+    test("swipe 1 right", () {
+      List<List<Cell>> m = [[ new Cell(1) ]];
+      var m2 = swipeRight(m);
+      expect(m2.length, equals(1));
+      expect(m2[0].length, equals(4));
       expect(m2[0][3].value, equals(1));
     });
   });

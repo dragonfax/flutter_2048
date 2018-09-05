@@ -16,6 +16,7 @@ Notes:
 
 import "position.dart";
 import "range.dart";
+import "dart:math";
 
 class Cell {
   final int value;
@@ -182,59 +183,90 @@ List<List<Cell>> updateCurrentPositions(List<List<Cell>> llc) {
   }).toList();
 }
 
-class Matrix {
-  final List<List<Cell>> matrix;
+// rotates clockwise onces.
+List<List<Cell>> rotate(List<List<Cell>> matrix) {
 
-  Matrix(List<List<Cell>> oldMatrix) : matrix = nestedUnmodifiableList(updateCurrentPositions(oldMatrix));
+  // create new empty matrix
+  List<List<Cell>> newMatrix = new List(4);
+  range(0, 3).forEach((y) {
+    newMatrix.add(new List(4));
+  });
 
-  // rotates clockwise onces.
-  // also updates the cell positions internally.
-  Matrix rotate() {
-    List<List<Cell>> newMatrix = new List(4);
-    range(0, 3).forEach((y) {
-      newMatrix.add(new List(4));
-    });
+  var y = 0;
+  for ( var lc in matrix ) {
+    var x = 0;
+    for ( var c in lc ) {
 
-    range(0,matrix.length - 1).forEach((y){
-      range(0, matrix[y].length -1).forEach((x){
-        var c = matrix[y][x];
-        var source2 = rotatePosition(c.source);
-        var c2 = new Cell(c.value,source2);
-        var p2 = rotatePosition(new Position(x, y));
-        newMatrix[p2.y][p2.x] = c2;
-      });
-    });
-    return new Matrix(newMatrix);
-  }
-
-  // swipe right
-  Matrix swipeRight() {
-    /* 
-     * 1. Merge neighbors right to left.
-     *    Don't reuse a neighbor that was merged
-     * 2. move all cells to the right.
-    */
-    var m1 = mergeNeighbors(this.matrix);
-    var m2 = moveRight(m1);
-    return new Matrix(m2);
-  }
-
-  @override
-    String toString() {
-      var s = "";
-      for ( var lc in this.matrix ) {
-        s += "[";
-        for ( var c in lc ) {
-          if ( c == null ) {
-            s += "null, ";
-          } else {
-            s += "${c.value}, ";
-          }
-        }
-        s += "],\n";
-      }
-      return s;
+      var source2 = rotatePosition(c.source);
+      var current2 = rotatePosition(c.current);
+      var c2 = new Cell(c.value,source2,current2);
+      var p2 = rotatePosition(new Position(x, y));
+      newMatrix[p2.y][p2.x] = c2;
+      x += 1;
     }
+    y += 1;
+  }
+  return newMatrix;
+}
+
+List<List<Cell>> swipeRight(List<List<Cell>> matrix) {
+  /* 
+    * 1. Merge neighbors right to left.
+    *    Don't reuse a neighbor that was merged
+    * 2. move all cells to the right.
+  */
+  var m1 = mergeNeighbors(matrix);
+  var m2 = moveRight(m1);
+  return m2;
+}
+
+List<List<Cell>> rotateNum(int num, List<List<Cell>> matrix) {
+  var m2 = matrix;
+  for ( var i = 0; i < num; i++ ) {
+    m2 = rotate(m2);
+  }
+  return m2;
+}
+
+List<List<Cell>> swipeUp(List<List<Cell>> matrix) {
+  return rotateNum(3, swipeRight(rotate(matrix)));
+}
+
+List<List<Cell>> swipeLeft(List<List<Cell>> matrix) {
+  return rotateNum(2, swipeRight(rotateNum(2, matrix)));
+}
+
+List<List<Cell>> swipeDown(List<List<Cell>> matrix) {
+  return rotateNum(1, swipeRight(rotateNum(3, matrix)));
+}
+
+final Random rand = new Random();
+
+Position randomEmptyPosition(List<List<Cell>> matrix) {
+
+  // get list of open positions. 
+  // choose on of them randomly
+
+  List<Position> empty = new List();
+
+  var y = 0;
+  for ( var lc in matrix ) {
+    var x = 0;
+    for ( var c in lc ) {
+      if ( c == null ) {
+        empty.add(new Position(x, y));
+      }
+      x += 1;
+    }
+    y += 1;
+  }
+
+  if ( empty.length == 0 ) {
+    throw("game over, no empty spots");
+  }
+
+  return empty[];
 
 }
+
 
