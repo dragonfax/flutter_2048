@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:quiver/core.dart';
 
 class Position {
   final int x, y;
@@ -8,9 +9,9 @@ class Position {
     return new Offset(x.toDouble(), y.toDouble());
   }
 
-  bool equals(Position p) {
-    return x == p.x && y == p.y;
-  }
+  bool operator ==(o) => o is Position && o.x == x && o.y == y;
+  int get hashCode => hash2(x.hashCode, y.hashCode);
+
 
   String toString() {
     return "[$x,$y]";

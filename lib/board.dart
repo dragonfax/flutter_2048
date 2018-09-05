@@ -162,28 +162,6 @@ class Board {
     return l;
   }
 
-  List<Piece> mergeNeighbors(List<Piece> list ) {
-    var newList = <Piece>[];
-    var skip = false;
-    range(0, list.length - 1).forEach((x) {
-      if ( skip ) {
-        skip = false;
-      } else if (x == list.length - 1 || list[x].value == null || list[x + 1].value == null) {
-        // nothing special
-        newList.add(new Piece(list[x].value, <Piece>[list[x]]));
-      } else if (list[x].value == list[x + 1].value) {
-        // merge
-        newList.add(new Piece(list[x].value * 2, <Piece>[list[x], list[x + 1]]));
-        // newList.add(new Piece(null, <Piece>[list[x], list[x + 1]]));
-        skip = true;
-      } else {
-        newList.add(new Piece(list[x].value, <Piece>[list[x]]));
-      }
-    });
-
-    return newList;
-  }
-
   List<Piece> expand(int length, List<Piece> list) {
     if ( list.length >= length ) {
       return list;
