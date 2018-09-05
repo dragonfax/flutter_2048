@@ -83,6 +83,23 @@ void main() {
       expect(m2[0][1].value, equals(2));
     });
   });
+
+  group("move right", () {
+    test("moving nothing right", () {
+      List<List<Cell>> m = [];
+      var m2 = moveRight(m);
+      expect(m2.length,equals(0));
+    });
+
+    test("moving 1 right", () {
+      List<List<Cell>> m = [[new Cell(1)]];
+      var m2 = moveRight(m);
+      expect(m2.length, equals(1));
+      expect(m2[0].length, equals(4));
+      print (m2);
+      expect(m2[0][3].value, equals(1));
+    });
+  });
 }
 
 

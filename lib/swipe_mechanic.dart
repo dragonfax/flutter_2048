@@ -153,15 +153,17 @@ List<List<Cell>> moveRight(List<List<Cell>> matrix) {
    * 2. filter out nulls
    * 3. pad the left side with null cells to pad the row length out to 4 items.
   */
-  return range(0,matrix.length - 1).map((y) {
-    var l = matrix[y].where((e){ return e != null; });
-    var bump = 4 - l.length;
+
+  var m2 = stripNulls(matrix);
+
+  return m2.map((lc) {
+    var bump = 4 - lc.length;
     if ( bump == 0 ) {
-      return l;
+      return lc;
     } else {
-      return range(0, bump - 1).map((i) { return null; }).toList() + l;
+      return List<Cell>.filled(bump, null) + lc;
     }
-  });
+  }).toList();
 }
 
 List<List<Cell>> updateCurrentPositions(List<List<Cell>> llc) {
