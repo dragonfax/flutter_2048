@@ -110,7 +110,7 @@ Position rotatePosition(Position p) {
 List<List<Cell>> stripNulls(List<List<Cell>> llc) {
   return llc.map((lc) {
     return lc.where((e) { return e != null; }).toList();
-  }).where((lc) { return lc.length > 0; }).toList();
+  }).toList();
 }
 
 List<List<Cell>> mergeNeighbors(List<List<Cell>> matrix) {
@@ -198,7 +198,7 @@ List<List<Cell>> rotate(List<List<Cell>> matrix) {
     for ( var c in lc ) {
       if ( c != null ) {
         var p2 = rotatePosition(new Position(x, y));
-        var source2 = rotatePosition(c.source);
+        var source2 = c.source == null ? null : rotatePosition(c.source);
         var current2 = c.current == null ? null : rotatePosition(c.current);
         var c2 = new Cell(c.value,source2,current2);
         newMatrix[p2.y][p2.x] = c2;

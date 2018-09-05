@@ -4,8 +4,23 @@ import "package:flutter_2048/position.dart";
 
 void main() {
   group("rotation",() {
-    test("",(){
+    test("rotate position",(){
       expect(rotatePosition(new Position(1,1)), equals(new Position(2,1)));
+      expect(rotatePosition(new Position(2,1)), equals(new Position(2,2)));
+      expect(rotatePosition(new Position(2,2)), equals(new Position(1,2)));
+      expect(rotatePosition(new Position(1,2)), equals(new Position(1,1)));
+    });
+
+    test("rotate matrix", () {
+      List<List<Cell>> m = [[ null, null, null, new Cell(1)]];
+      var m2 = rotate(m);
+      expect(m2[3][3].value, equals(1));
+
+      var m3 = rotate(m2);
+      expect(m3[3][0].value, equals(1));
+
+      var m4 = rotate(m3);
+      expect(m4[0][0].value, equals(1));
     });
   });
 
@@ -31,7 +46,8 @@ void main() {
 
     test("strip from null",(){
       var r = stripNulls([[null]]);
-      expect(r.length, equals(0));
+      expect(r.length, equals(1));
+      expect(r[0].length, equals(0));
     });
 
     test("strip from non null",(){
@@ -60,7 +76,7 @@ void main() {
     test("merge none", () {
       List<List<Cell>> m1 = [ [ null ] ];
       var m2 = mergeNeighbors(m1);
-      expect(m2.length, equals(0));
+      expect(m2[0].length, equals(0));
     });
 
     test("merge 2", () {
@@ -95,7 +111,7 @@ void main() {
     });
   });
 
-  group("swipe right", () {
+  group("swipe", () {
     test("swipe nothing right", () {
       List<List<Cell>> m = [];
       var m2 = swipeRight(m);
@@ -108,6 +124,49 @@ void main() {
       expect(m2.length, equals(1));
       expect(m2[0].length, equals(4));
       expect(m2[0][3].value, equals(1));
+    });
+
+    test("swipe left",() {
+      List<List<Cell>> m = [[ null, null, null, new Cell(1) ]];
+      print("m");
+      print(m);
+      var m2 = rotateNum(2,m);
+      print("m2");
+      print(m2);
+      var m3 = swipeRight(m2);
+      print("m3");
+      print(m3);
+      var m4 = rotateNum(2,m3);
+      print("m4");
+      print(m4);
+      //var m2 = swipeLeft(updateCurrentPositions(m));
+      //print(m2);
+      expect(m4[0][0].value, equals(1));
+    });
+
+    test("swipe up",() {
+      List<List<Cell>> m = [
+        [ null, ],
+        [ null, ],
+        [ null, ],
+        [ new Cell(1) ],
+        ];
+      var m2 = swipeUp(updateCurrentPositions(m));
+      expect(m2[0][0].value, equals(1));
+    });
+
+    test("swipe down",() {
+      List<List<Cell>> m = [ [ new Cell(1) ] ];
+      var m2 = swipeDown(updateCurrentPositions(m));
+      expect(m2[3][0].value, equals(1));
+    });
+  });
+
+  group("source position tracking",() {
+    test("",(){
+      List<List<Cell>> m = [ [ new Cell(1) ] ];
+      var m2 = swipeDown(updateCurrentPositions(m));
+      expect(m2[3][0].source, equals(new Position(0,0)));
     });
   });
 }
