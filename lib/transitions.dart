@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'position.dart';
-import 'piece.dart';
 
 class PieceKey extends ValueKey<Piece> {
   PieceKey(Piece p): super(p);

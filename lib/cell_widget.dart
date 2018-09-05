@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'piece.dart';
 import 'position.dart';
+import 'swipe_mechanic.dart';
 // import 'transitions.dart';
 
 const CellWidth = 60.0;
 
+Widget createPositioned(Position pos, Widget child) {
+  return new Positioned(
+      top: pos.y * CellWidth,
+      height: CellWidth,
+      left: pos.x * CellWidth,
+      width: CellWidth,
+      child: child
+  );
+}
+
 class CellWidget extends StatelessWidget {
-  final Piece piece;
+  final Cell piece;
+  final Position position;
 
-  CellWidget(this.piece); // : super(key: new PieceKey(piece));
-
-  Widget createPositioned(Position pos, Widget child) {
-    return new Positioned(
-        top: pos.y * CellWidth,
-        height: CellWidth,
-        left: pos.x * CellWidth,
-        width: CellWidth,
-        child: child
-    );
-  }
+  CellWidget(this.position, this.piece); // : super(key: new PieceKey(piece));
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +36,13 @@ class CellWidget extends StatelessWidget {
                 borderRadius:
                     const BorderRadius.all(const Radius.circular(10.0))),
             child: new Text(
-                piece.value == null ? " " : piece.toString(),
+                ( piece == null || piece.value == null ) ? " " : piece.toString(),
                 style: const TextStyle(
                     fontSize: 28.0, fontWeight: FontWeight.bold))
      );
 
 
-     var position = piece.position;
+     // var position = piece.current;
      // if ( piece.fromNothing() ) {
        return createPositioned(position, container);
      /*} else if ( piece.newPiece() ) {

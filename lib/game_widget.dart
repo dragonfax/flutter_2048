@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'board_widget.dart';
 import 'swipe_gesture_widget.dart';
+import 'board.dart';
 
 class GameWidget extends StatefulWidget {
   GameWidget({Key key, this.title}) : super(key: key);
@@ -24,13 +25,13 @@ class GameState extends State<GameWidget> {
   final Board board = new Board();
 
   GameState() {
-    board.addNewPeice();
+    board.addNewPiece();
   }
 
   newGame() {
     setState(() {
       board.reset();
-      board.addNewPeice();
+      board.addNewPiece();
     });
   }
 
@@ -39,26 +40,26 @@ class GameState extends State<GameWidget> {
     return new SwipeGestureWidget(
       onSwipeUp: () {
         setState((){
-          board.swipe(Direction.up);
-          board.addNewPeice();
+          board.swipeUp();
+          board.addNewPiece();
         });
       },
       onSwipeDown: () {
         setState((){
-          board.swipe(Direction.down);
-          board.addNewPeice();
+          board.swipeDown();
+          board.addNewPiece();
         });
       },
       onSwipeLeft: () {
         setState((){
-          board.swipe(Direction.left);
-          board.addNewPeice();
+          board.swipeLeft();
+          board.addNewPiece();
         });
       },
       onSwipeRight: () {
         setState((){
-          board.swipe(Direction.right);
-          board.addNewPeice();
+          board.swipeRight();
+          board.addNewPiece();
         });
       },
       child: new Scaffold(
@@ -66,12 +67,13 @@ class GameState extends State<GameWidget> {
           title: new Text(widget.title),
         ),
         body: new Center(
-          child: new Stack(
-            children: [
+          // child: new Stack(
+            // children: [
               // new BoardWidget(background, true),
-              new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board, false)),
-            ]
-          )
+              // new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board, false)),
+              child: new BoardWidget(board, false),
+            //]
+          //)
         ),
         floatingActionButton: new FloatingActionButton(
           onPressed: newGame,

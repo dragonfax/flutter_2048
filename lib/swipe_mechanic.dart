@@ -265,7 +265,7 @@ Position randomEmptyPosition(List<List<Cell>> matrix) {
     throw("game over, no empty spots");
   }
 
-  return empty[];
+  return empty[rand.nextInt(empty.length)];
 
 }
 

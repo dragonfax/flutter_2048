@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'board.dart';
 import 'cell_widget.dart';
+import 'board.dart';
+import 'position.dart';
 
 
 class BoardWidget extends StatelessWidget {
@@ -14,10 +15,8 @@ class BoardWidget extends StatelessWidget {
     var children = <Widget>[];
     for (int x = 0; x <= 3; x++) {
       for (int y = 0; y <= 3; y++) {
-        var piece = board.get(x, y);
-        if ( background || ( piece != null && piece.value != null ) ) {
-          children.add(new CellWidget(piece));
-        }
+        var piece = board.matrix[y][x];
+        children.add(new CellWidget(new Position(x, y), piece));
       }
     }
 
