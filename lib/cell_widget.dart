@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'piece.dart';
 import 'position.dart';
-import 'transitions.dart';
+// import 'transitions.dart';
 
 const CellWidth = 60.0;
 
 class CellWidget extends StatelessWidget {
   final Piece piece;
 
-  CellWidget(this.piece): super(key: new PieceKey(piece));
+  CellWidget(this.piece); // : super(key: new PieceKey(piece));
 
   Widget createPositioned(Position pos, Widget child) {
     return new Positioned(
@@ -42,9 +42,9 @@ class CellWidget extends StatelessWidget {
 
 
      var position = piece.position;
-     if ( piece.fromNothing() ) {
+     // if ( piece.fromNothing() ) {
        return createPositioned(position, container);
-     } else if ( piece.newPiece() ) {
+     /*} else if ( piece.newPiece() ) {
        return createPositioned(position, new NewPieceTransition(container, piece));
      } else if ( piece.maintained() || piece.merged() ) {
        return new SlidePositionedTransition(
@@ -56,6 +56,6 @@ class CellWidget extends StatelessWidget {
        );
      } else {
        throw "unknown piece source";
-     }
+     } */
   }
 }
