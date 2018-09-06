@@ -46,29 +46,27 @@ class EmptyAppearState extends State<EmptyAppearTransition> with SingleTickerPro
 
   }
 }
+*/
 
-class NewPieceTransition extends StatefulWidget {
+class PopInTransition extends StatefulWidget {
   final Widget child;
-  final Piece piece;
 
-  NewPieceTransition(this.child, this.piece);
+  PopInTransition(this.child);
 
   @override
-  NewPieceState createState() => new NewPieceState();
+  PopInState createState() => new PopInState();
 }
 
-
-class NewPieceState extends State<NewPieceTransition> with SingleTickerProviderStateMixin {
+class PopInState extends State<PopInTransition>
+    with SingleTickerProviderStateMixin {
   AnimationController controller;
 
   @override
   initState() {
     super.initState();
+
     controller = new AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 1000)
-    );
-    debugPrint("starting new piece animation");
+        vsync: this, duration: const Duration(milliseconds: 800));
     controller.forward();
   }
 
@@ -78,16 +76,26 @@ class NewPieceState extends State<NewPieceTransition> with SingleTickerProviderS
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    // var animation = new CurvedAnimation(parent: controller, curve: Curves.elasticOut);
 
-    var animation = new CurvedAnimation(parent: controller, curve: Curves.elasticOut);
+    Animation<double> animation = new TweenSequence(
+      <TweenSequenceItem<double>>[
+        new TweenSequenceItem<double>(
+          tween: new ConstantTween<double>(0.0),
+          weight: 75.0,
+        ),
+        new TweenSequenceItem<double>(
+          tween: new CurveTween(curve: Curves.elasticOut),
+          weight: 25.0,
+        ),
+      ],
+    ).animate(controller);
 
-    return new ScaleTransition(key: new PieceKey(widget.piece), scale: animation, child: widget.child);
+    return new ScaleTransition(scale: animation, child: widget.child);
   }
 }
-*/
 
 class AbsolutePositionedTransition extends AnimatedWidget {
   /// Uses static size for the Positioned, (not the container, like RelativePositionedTransition does)
@@ -123,22 +131,25 @@ class SlidePositionedTransition extends StatefulWidget {
   final Position target;
   final double cellWidth;
 
-  SlidePositionedTransition({ @required this.child, @required this.source, @required this.target, @required this.cellWidth});
+  SlidePositionedTransition(
+      {@required this.child,
+      @required this.source,
+      @required this.target,
+      @required this.cellWidth});
 
   @override
   SlidePositionedState createState() => new SlidePositionedState();
 }
 
-class SlidePositionedState extends State<SlidePositionedTransition> with SingleTickerProviderStateMixin {
+class SlidePositionedState extends State<SlidePositionedTransition>
+    with SingleTickerProviderStateMixin {
   AnimationController controller;
 
   @override
   initState() {
     super.initState();
     controller = new AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 1000)
-    );
+        vsync: this, duration: const Duration(milliseconds: 600));
     // debugPrint("starting animation to ${widget.target}.");
     controller.forward();
   }
@@ -150,29 +161,39 @@ class SlidePositionedState extends State<SlidePositionedTransition> with SingleT
   }
 
   Widget build(BuildContext context) {
-
     var source = widget.source;
     var target = widget.target;
-    if ( source == null ) {
+    if (source == null) {
       source = target;
     }
-    var sourceO = new Offset(source.x * widget.cellWidth, source.y * widget.cellWidth);
-    var targetO = new Offset(target.x * widget.cellWidth, target.y * widget.cellWidth);
+    var sourceO =
+        new Offset(source.x * widget.cellWidth, source.y * widget.cellWidth);
+    var targetO =
+        new Offset(target.x * widget.cellWidth, target.y * widget.cellWidth);
 
-    // debugPrint("sliding from $source to $target");
-
-    Animation<Offset> offset = new Tween<Offset>(
-      begin: sourceO,
-      end: targetO,
-    ).animate(controller);
+    Animation<Offset> offset = new TweenSequence(<TweenSequenceItem<Offset>>[
+      new TweenSequenceItem<Offset>(
+        tween: new Tween<Offset>(
+          begin: sourceO,
+          end: sourceO,
+        ),
+        weight: 33.0,
+      ),
+      new TweenSequenceItem<Offset>(
+        tween: new Tween<Offset>(
+          begin: sourceO,
+          end: targetO,
+        ),
+        weight: 66.0,
+      ),
+    ]).animate(controller);
 
     // debugPrint("returning new absolute position transition to $target from $source.");
     return new AbsolutePositionedTransition(
         // key: new PieceKey(widget.piece),
-      key: new UniqueKey(),
-      child: widget.child,
-      size: new Size(widget.cellWidth,widget.cellWidth),
-      offset: offset
-    );
+        key: new UniqueKey(),
+        child: widget.child,
+        size: new Size(widget.cellWidth, widget.cellWidth),
+        offset: offset);
   }
 }

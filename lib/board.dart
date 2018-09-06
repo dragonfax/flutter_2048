@@ -10,7 +10,7 @@ class Board {
 
   addNewPiece() {
     var p = swipe.randomEmptyPosition(matrix);
-    matrix[p.y][p.x] = new swipe.Cell(1, p, p);
+    matrix[p.y][p.x] = new swipe.Cell(1, null, p);
   }
 
   reset() {
