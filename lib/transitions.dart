@@ -139,7 +139,7 @@ class SlidePositionedState extends State<SlidePositionedTransition> with SingleT
         vsync: this,
         duration: const Duration(milliseconds: 1000)
     );
-    debugPrint("starting animation to ${widget.target}.");
+    // debugPrint("starting animation to ${widget.target}.");
     controller.forward();
   }
 
@@ -161,7 +161,7 @@ class SlidePositionedState extends State<SlidePositionedTransition> with SingleT
       end: target,
     ).animate(controller);
 
-    debugPrint("returning new absolute position transition to $target from $source.");
+    // debugPrint("returning new absolute position transition to $target from $source.");
     return new AbsolutePositionedTransition(
         // key: new PieceKey(widget.piece),
       key: new UniqueKey(),

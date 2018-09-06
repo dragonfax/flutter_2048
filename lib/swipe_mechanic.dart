@@ -270,4 +270,33 @@ Position randomEmptyPosition(List<List<Cell>> matrix) {
 
 }
 
+// do they match?
+bool compareMatrix(List<List<Cell>> m1, List<List<Cell>> m2) {
 
+  if ( m1.length != m2.length ) {
+    return false;
+  }
+  var y = 0;
+  for ( List<Cell> lc1 in m1 ) {
+    if ( m2.length != m1.length ) {
+      return false;
+    }
+    var x = 0;
+    for ( Cell c1 in lc1 ) {
+      var c2 = m2[y][x];
+      if ( ( c1 == null ) != ( c2 == null ) ) {
+        return false;
+      }
+      else if ( c1 == null && c2 == null ) {
+        return true;
+      }
+      else if ( c1.value != c2.value ) {
+        return false;
+      }
+      x += 1;
+    }
+    y+= 1;
+  }
+
+  return true;
+}

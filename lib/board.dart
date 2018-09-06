@@ -17,20 +17,28 @@ class Board {
     matrix = fixMatrix([]);
   }
 
-  swipeUp() {
+  bool swipeUp() {
+    var om = matrix;
     matrix = fixMatrix(swipe.swipeUp(matrix));
+    return swipe.compareMatrix(om, matrix);
   }
 
-  swipeDown() {
+  bool swipeDown() {
+    var om = matrix;
     matrix = fixMatrix(swipe.swipeDown(matrix));
+    return swipe.compareMatrix(om, matrix);
   }
 
-  swipeLeft() {
+  bool swipeLeft() {
+    var om = matrix;
     matrix = fixMatrix(swipe.swipeLeft(matrix));
+    return swipe.compareMatrix(om, matrix);
   }
 
-  swipeRight() {
+  bool swipeRight() {
+    var om = matrix;
     matrix = fixMatrix(swipe.swipeRight(matrix));
+    return swipe.compareMatrix(om, matrix);
   }
 
 }

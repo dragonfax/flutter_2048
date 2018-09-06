@@ -40,26 +40,30 @@ class GameState extends State<GameWidget> {
     return new SwipeGestureWidget(
       onSwipeUp: () {
         setState((){
-          board.swipeUp();
-          board.addNewPiece();
+          if ( ! board.swipeUp() ) {
+            board.addNewPiece();
+          }
         });
       },
       onSwipeDown: () {
         setState((){
-          board.swipeDown();
-          board.addNewPiece();
+          if ( ! board.swipeDown() ) {
+            board.addNewPiece();
+          }
         });
       },
       onSwipeLeft: () {
         setState((){
-          board.swipeLeft();
-          board.addNewPiece();
+          if ( ! board.swipeLeft() ) {
+            board.addNewPiece();
+          }
         });
       },
       onSwipeRight: () {
         setState((){
-          board.swipeRight();
-          board.addNewPiece();
+          if ( ! board.swipeRight() ) {
+            board.addNewPiece();
+          }
         });
       },
       child: new Scaffold(
