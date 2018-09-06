@@ -2,51 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'position.dart';
 
-/*
-class CellKey extends ValueKey<Cell> {
-  CellKey(Cell p): super(p);
-}
-
 class EmptyAppearTransition extends StatefulWidget {
   final Widget child;
-  final Piece piece;
 
-  EmptyAppearTransition(this.child, this.piece);
+  EmptyAppearTransition(this.child);
 
   @override
   EmptyAppearState createState() => new EmptyAppearState();
 }
 
-class EmptyAppearState extends State<EmptyAppearTransition> with SingleTickerProviderStateMixin {
+class EmptyAppearState extends State<EmptyAppearTransition>
+    with SingleTickerProviderStateMixin {
   AnimationController controller;
 
   @override
   initState() {
     super.initState();
     controller = new AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-    debugPrint("starting empty animation");
+        duration: const Duration(milliseconds: 700), vsync: this);
     controller.forward();
   }
 
   @override
   dispose() {
-    controller.dispose();
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return new ScaleTransition(
-        key: new PieceKey(widget.piece),
-        scale: controller,
-        child: widget.child
-    );
+    Animation<double> animation = new TweenSequence(
+      <TweenSequenceItem<double>>[
+        new TweenSequenceItem<double>(
+          tween: new ConstantTween<double>(0.0),
+          weight: 85.0,
+        ),
+        new TweenSequenceItem<double>(
+          tween: new CurveTween(curve: new Threshold(0.50)),
+          weight: 15.0,
+        ),
+      ],
+    ).animate(controller);
 
+    // return new ScaleTransition(scale: animation, child: widget.child);
+    /*
+    return new AnimatedOpacity(
+      child: widget.child,
+      opacity: 1.0,
+      duration: new Duration(milliseconds: 700),
+      curve: new Threshold(0.85),
+    );
+    */
+
+    return new FadeTransition(
+      child: widget.child,
+      opacity: animation,
+    );
   }
 }
-*/
 
 class PopInTransition extends StatefulWidget {
   final Widget child;

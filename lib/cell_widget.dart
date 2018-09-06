@@ -57,7 +57,7 @@ class CellWidget extends StatelessWidget {
     // return createPositioned(position, container);
     // } else if ( piece.maintained() || piece.merged() ) {
     if (piece == null) {
-      return createPositioned(position, container);
+      return createPositioned(position, new EmptyAppearTransition(container));
     } else if (piece.source == null) {
       return createPositioned(position, new PopInTransition(container));
     } else {

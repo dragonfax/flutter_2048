@@ -5,7 +5,6 @@ List<List<swipe.Cell>> fixMatrix(List<List<swipe.Cell>> matrix) {
 }
 
 class Board {
-
   List<List<swipe.Cell>> matrix = fixMatrix([]);
 
   addNewPiece() {
@@ -15,16 +14,9 @@ class Board {
 
   reset() {
     matrix = fixMatrix([]);
-    matrix[0][0] = new swipe.Cell(2048);
-    matrix[0][1] = new swipe.Cell(1024);
-    matrix[0][3] = new swipe.Cell(512);
     matrix[1][0] = new swipe.Cell(256);
-    matrix[1][1] = new swipe.Cell(128);
-    matrix[1][2] = new swipe.Cell(64);
     matrix[1][3] = new swipe.Cell(32);
-    matrix[2][0] = new swipe.Cell(16);
     matrix[2][1] = new swipe.Cell(8);
-    matrix[2][2] = new swipe.Cell(4);
     matrix = fixMatrix(matrix);
   }
 
@@ -51,5 +43,4 @@ class Board {
     matrix = fixMatrix(swipe.swipeRight(matrix));
     return swipe.compareMatrix(om, matrix);
   }
-
 }
