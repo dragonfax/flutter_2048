@@ -18,7 +18,8 @@ class CellWidget extends StatelessWidget {
   final Cell piece;
   final Position position;
 
-  CellWidget(this.position, this.piece); // : super(key: new PieceKey(piece));
+  CellWidget(this.position, this.piece)
+      : super(key: piece == null ? null : new ObjectKey(piece));
 
   @override
   Widget build(BuildContext context) {
