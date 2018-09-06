@@ -24,6 +24,19 @@ class CellWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    var fontSize = 28.0;
+    if ( piece != null ) {
+      if ( piece.value > 999 ) {
+        fontSize = 14.0; 
+      }
+      else if ( piece.value > 99 ) {
+        fontSize = 17.0;
+      }
+      else if ( piece.value > 9 ) {
+        fontSize = 23.0;
+      }
+    }
+
      var container = new Container(
             margin: const EdgeInsets.all(3.0),
             padding: const EdgeInsets.all(8.0),
@@ -35,10 +48,16 @@ class CellWidget extends StatelessWidget {
                 border: new Border.all(width: 2.0, color: Colors.black),
                 borderRadius:
                     const BorderRadius.all(const Radius.circular(10.0))),
-            child: new Text(
+            // child: new FittedBox( 
+              // fit: BoxFit.scaleDown,
+              child: new Text(
                 ( piece == null || piece.value == null ) ? " " : piece.toString(),
-                style: const TextStyle(
-                    fontSize: 28.0, fontWeight: FontWeight.bold))
+                style: new TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold
+                )
+              )
+            // )
      );
 
 

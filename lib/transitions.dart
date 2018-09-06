@@ -151,14 +151,19 @@ class SlidePositionedState extends State<SlidePositionedTransition> with SingleT
 
   Widget build(BuildContext context) {
 
-    var source = new Offset(widget.source.x * widget.cellWidth, widget.source.y * widget.cellWidth);
-    var target = new Offset(widget.target.x * widget.cellWidth, widget.target.y * widget.cellWidth);
+    var source = widget.source;
+    var target = widget.target;
+    if ( source == null ) {
+      source = target;
+    }
+    var sourceO = new Offset(source.x * widget.cellWidth, source.y * widget.cellWidth);
+    var targetO = new Offset(target.x * widget.cellWidth, target.y * widget.cellWidth);
 
     // debugPrint("sliding from $source to $target");
 
     Animation<Offset> offset = new Tween<Offset>(
-      begin: source,
-      end: target,
+      begin: sourceO,
+      end: targetO,
     ).animate(controller);
 
     // debugPrint("returning new absolute position transition to $target from $source.");
