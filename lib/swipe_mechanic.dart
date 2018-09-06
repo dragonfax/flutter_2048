@@ -12,8 +12,6 @@ Notes:
   Assumes a fixed matrix of 4x4
 */
 
-
-
 import "position.dart";
 import "range.dart";
 import "dart:math";
@@ -23,22 +21,21 @@ class Cell {
   final Position source;
   final Position current;
 
-  Cell(this.value,[ this.source, this.current ]);
+  Cell(this.value, [this.source, this.current]);
 
   @override
-    String toString() {
-      return this.value.toString();
-    }
+  String toString() {
+    return this.value.toString();
+  }
 }
 
-List<List<Cell>> padMatrix(List<List<Cell>> matrix ) {
-
+List<List<Cell>> padMatrix(List<List<Cell>> matrix) {
   List<List<Cell>> m2 = new List();
 
-  range(0,3).forEach((y) {
+  range(0, 3).forEach((y) {
     m2.add([]);
-    range(0,3).forEach((x){
-      if ( matrix.length <= y || matrix[y].length <= x ) {
+    range(0, 3).forEach((x) {
+      if (matrix.length <= y || matrix[y].length <= x) {
         m2[y].add(null);
       } else {
         m2[y].add(matrix[y][x]);
@@ -67,39 +64,39 @@ List<List<Cell>> padMatrix(List<List<Cell>> matrix ) {
 }
 
 List<List<Cell>> nestedUnmodifiableList(List<List<Cell>> matrix) {
-    List<List<Cell>> l = new List();
+  List<List<Cell>> l = new List();
 
-    for ( List<Cell> lc in matrix ) {
-      List<Cell> ly = List.unmodifiable(lc);
-      l.add(ly);
-    }
-    return List.unmodifiable(padMatrix(l));
+  for (List<Cell> lc in matrix) {
+    List<Cell> ly = List.unmodifiable(lc);
+    l.add(ly);
+  }
+  return List.unmodifiable(padMatrix(l));
 }
 
 const rotatedPositions = const [
-  [ 
-    const Position(3,0),
-    const Position(3,1) ,
-    const Position(3,2) ,
-    const Position(3,3) ,
+  [
+    const Position(3, 0),
+    const Position(3, 1),
+    const Position(3, 2),
+    const Position(3, 3),
   ],
-  [ 
-    const Position(2,0) ,
-    const Position(2,1) ,
-    const Position(2,2) ,
-    const Position(2,3) ,
+  [
+    const Position(2, 0),
+    const Position(2, 1),
+    const Position(2, 2),
+    const Position(2, 3),
   ],
-  [ 
-    const Position(1,0) ,
-    const Position(1,1) ,
-    const Position(1,2) ,
-    const Position(1,3) ,
+  [
+    const Position(1, 0),
+    const Position(1, 1),
+    const Position(1, 2),
+    const Position(1, 3),
   ],
-  [ 
-    const Position(0,0) ,
-    const Position(0,1) ,
-    const Position(0,2) ,
-    const Position(0,3) ,
+  [
+    const Position(0, 0),
+    const Position(0, 1),
+    const Position(0, 2),
+    const Position(0, 3),
   ],
 ];
 
@@ -109,35 +106,34 @@ Position rotatePosition(Position p) {
 
 List<List<Cell>> stripNulls(List<List<Cell>> llc) {
   return llc.map((lc) {
-    return lc.where((e) { return e != null; }).toList();
+    return lc.where((e) {
+      return e != null;
+    }).toList();
   }).toList();
 }
 
 List<List<Cell>> mergeNeighbors(List<List<Cell>> matrix) {
-
   var llc0 = stripNulls(matrix);
 
   List<List<Cell>> llc = new List();
 
-  for ( List<Cell> lc in llc0) {
-
+  for (List<Cell> lc in llc0) {
     List<Cell> lc2 = new List();
     var skipNext = false;
-    for ( var x = lc.length - 1; x >= 0; x-- ) {
+    for (var x = lc.length - 1; x >= 0; x--) {
       var cell = lc[x];
 
-      if ( skipNext) { 
+      if (skipNext) {
         skipNext = false;
-      }
-      else if ( x == 0 ) {
-        lc2.insert(0,new Cell(cell.value, cell.current));
+      } else if (x == 0) {
+        lc2.insert(0, new Cell(cell.value, cell.current));
       } else {
-        var nextCell = lc[x-1];
-        if ( cell.value == nextCell.value ) {
-          lc2.insert(0,new Cell(cell.value * 2, cell.current));
+        var nextCell = lc[x - 1];
+        if (cell.value == nextCell.value) {
+          lc2.insert(0, new Cell(cell.value * 2, cell.current));
           skipNext = true;
         } else {
-          lc2.insert(0,new Cell(cell.value, cell.current));
+          lc2.insert(0, new Cell(cell.value, cell.current));
         }
       }
     }
@@ -146,7 +142,6 @@ List<List<Cell>> mergeNeighbors(List<List<Cell>> matrix) {
 
   return llc;
 }
-
 
 List<List<Cell>> moveRight(List<List<Cell>> matrix) {
   /*
@@ -159,7 +154,7 @@ List<List<Cell>> moveRight(List<List<Cell>> matrix) {
 
   return m2.map((lc) {
     var bump = 4 - lc.length;
-    if ( bump == 0 ) {
+    if (bump == 0) {
       return lc;
     } else {
       return List<Cell>.filled(bump, null) + lc;
@@ -174,10 +169,10 @@ List<List<Cell>> updateCurrentPositions(List<List<Cell>> llc) {
     var x = -1;
     return lc.map((c) {
       x += 1;
-      if ( c == null ) {
+      if (c == null) {
         return null;
       } else {
-        return new Cell(c.value,c.source,new Position(x,y));
+        return new Cell(c.value, c.source, new Position(x, y));
       }
     }).toList();
   }).toList();
@@ -185,7 +180,6 @@ List<List<Cell>> updateCurrentPositions(List<List<Cell>> llc) {
 
 // rotates clockwise onces.
 List<List<Cell>> rotate(List<List<Cell>> matrix) {
-
   // create new empty matrix
   List<List<Cell>> newMatrix = new List(4);
   range(0, 3).forEach((y) {
@@ -193,14 +187,14 @@ List<List<Cell>> rotate(List<List<Cell>> matrix) {
   });
 
   var y = 0;
-  for ( var lc in matrix ) {
+  for (var lc in matrix) {
     var x = 0;
-    for ( var c in lc ) {
-      if ( c != null ) {
+    for (var c in lc) {
+      if (c != null) {
         var p2 = rotatePosition(new Position(x, y));
         var source2 = c.source == null ? null : rotatePosition(c.source);
         var current2 = c.current == null ? null : rotatePosition(c.current);
-        var c2 = new Cell(c.value,source2,current2);
+        var c2 = new Cell(c.value, source2, current2);
         newMatrix[p2.y][p2.x] = c2;
       }
       x += 1;
@@ -223,7 +217,7 @@ List<List<Cell>> swipeRight(List<List<Cell>> matrix) {
 
 List<List<Cell>> rotateNum(int num, List<List<Cell>> matrix) {
   var m2 = matrix;
-  for ( var i = 0; i < num; i++ ) {
+  for (var i = 0; i < num; i++) {
     m2 = rotate(m2);
   }
   return m2;
@@ -244,17 +238,16 @@ List<List<Cell>> swipeDown(List<List<Cell>> matrix) {
 final Random rand = new Random();
 
 Position randomEmptyPosition(List<List<Cell>> matrix) {
-
-  // get list of open positions. 
+  // get list of open positions.
   // choose on of them randomly
 
   List<Position> empty = new List();
 
   var y = 0;
-  for ( var lc in matrix ) {
+  for (var lc in matrix) {
     var x = 0;
-    for ( var c in lc ) {
-      if ( c == null ) {
+    for (var c in lc) {
+      if (c == null) {
         empty.add(new Position(x, y));
       }
       x += 1;
@@ -262,40 +255,34 @@ Position randomEmptyPosition(List<List<Cell>> matrix) {
     y += 1;
   }
 
-  if ( empty.length == 0 ) {
-    throw("game over, no empty spots");
+  if (empty.length == 0) {
+    throw ("game over, no empty spots");
   }
 
   return empty[rand.nextInt(empty.length)];
-
 }
 
 // do they match?
 bool compareMatrix(List<List<Cell>> m1, List<List<Cell>> m2) {
-
-  if ( m1.length != m2.length ) {
+  if (m1.length != m2.length) {
     return false;
   }
   var y = 0;
-  for ( List<Cell> lc1 in m1 ) {
-    if ( m2.length != m1.length ) {
+  for (List<Cell> lc1 in m1) {
+    if (m2.length != m1.length) {
       return false;
     }
     var x = 0;
-    for ( Cell c1 in lc1 ) {
+    for (Cell c1 in lc1) {
       var c2 = m2[y][x];
-      if ( ( c1 == null ) != ( c2 == null ) ) {
+      if ((c1 == null) != (c2 == null)) {
         return false;
-      }
-      else if ( c1 == null && c2 == null ) {
-        return true;
-      }
-      else if ( c1.value != c2.value ) {
+      } else if (c1 != null && c1.value != c2.value) {
         return false;
       }
       x += 1;
     }
-    y+= 1;
+    y += 1;
   }
 
   return true;
