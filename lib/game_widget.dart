@@ -75,7 +75,7 @@ class GameState extends State<GameWidget> {
             // children: [
               // new BoardWidget(background, true),
               // new Positioned(left: 0.0, top: 0.0, child: new BoardWidget(board, false)),
-              child: new BoardWidget(board, false),
+              child: new BoardWidget(board),
             //]
           //)
         ),

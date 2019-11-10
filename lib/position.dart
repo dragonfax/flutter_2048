@@ -12,7 +12,6 @@ class Position {
   bool operator ==(o) => o is Position && o.x == x && o.y == y;
   int get hashCode => hash2(x.hashCode, y.hashCode);
 
-
   String toString() {
     return "[$x,$y]";
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'position.dart';
-import 'swipe_mechanic.dart';
 import 'transitions.dart';
+import 'cell.dart';
 
 const CellWidth = 60.0;
 
@@ -15,21 +15,20 @@ Widget createPositioned(Position pos, Widget child) {
 }
 
 class CellWidget extends StatelessWidget {
-  final Cell piece;
-  final Position position;
+  final Cell cell;
 
-  CellWidget(this.position, this.piece)
-      : super(key: piece == null ? null : new ObjectKey(piece));
+  CellWidget(this.cell)
+      : super(key: cell == null ? null : new ObjectKey(cell));
 
   @override
   Widget build(BuildContext context) {
     var fontSize = 28.0;
-    if (piece != null) {
-      if (piece.value > 999) {
+    if (cell != null) {
+      if (cell.value > 999) {
         fontSize = 14.0;
-      } else if (piece.value > 99) {
+      } else if (cell.value > 99) {
         fontSize = 17.0;
-      } else if (piece.value > 9) {
+      } else if (cell.value > 9) {
         fontSize = 23.0;
       }
     }
@@ -47,31 +46,31 @@ class CellWidget extends StatelessWidget {
         // child: new FittedBox(
         // fit: BoxFit.scaleDown,
         child: new Text(
-            (piece == null || piece.value == null) ? " " : piece.toString(),
+            (cell == null || cell.value == null) ? " " : cell.toString(),
             style:
                 new TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold))
         // )
         );
 
-    // var position = piece.current;
-    // if ( piece.fromNothing() ) {
+    var position = cell.current;
+    // if ( cell.fromNothing() ) {
     // return createPositioned(position, container);
-    // } else if ( piece.maintained() || piece.merged() ) {
-    if (piece == null) {
+    // } else if ( cell.maintained() || cell.merged() ) {
+    if (cell == null) {
       return createPositioned(position, new EmptyAppearTransition(container));
-    } else if (piece.source == null) {
+    } else if (cell.source == null) {
       return createPositioned(position, new PopInTransition(container));
     } else {
       return new SlidePositionedTransition(
         cellWidth: CellWidth,
         child: container,
-        source: piece.source,
-        target: piece.current,
+        source: cell.source,
+        target: cell.current,
       );
     }
     /*
      } else {
-       throw "unknown piece source";
+       throw "unknown cell source";
      } */
   }
 }
