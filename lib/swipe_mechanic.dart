@@ -52,7 +52,7 @@ Cell findCell(Set<Cell> matrix, Position p) {
 }
 
 
-Set<Cell> moveRight(Set<Cell> matrix) {
+Set<Cell> moveLeft(Set<Cell> matrix) {
 
   var newMatrix = Set<Cell>();
 
@@ -100,8 +100,8 @@ Set<Cell> rotate(Set<Cell> matrix) {
   return newMatrix;
 }
 
-Set<Cell> swipeRight(Set<Cell> matrix) {
-  return moveRight(matrix);
+Set<Cell> swipeLeft(Set<Cell> matrix) {
+  return moveLeft(matrix);
 }
 
 Set<Cell> rotateNum(int num, Set<Cell> matrix) {
@@ -112,14 +112,14 @@ Set<Cell> rotateNum(int num, Set<Cell> matrix) {
   return m2;
 }
 
-Set<Cell> swipeUp(Set<Cell> matrix) {
-  return rotateNum(3, swipeRight(rotate(matrix)));
-}
-
-Set<Cell> swipeLeft(Set<Cell> matrix) {
-  return rotateNum(2, swipeRight(rotateNum(2, matrix)));
-}
-
 Set<Cell> swipeDown(Set<Cell> matrix) {
-  return rotateNum(1, swipeRight(rotateNum(3, matrix)));
+  return rotateNum(3, swipeLeft(rotate(matrix)));
+}
+
+Set<Cell> swipeRight(Set<Cell> matrix) {
+  return rotateNum(2, swipeLeft(rotateNum(2, matrix)));
+}
+
+Set<Cell> swipeUp(Set<Cell> matrix) {
+  return rotateNum(1, swipeLeft(rotateNum(3, matrix)));
 }
