@@ -15,7 +15,7 @@ class BoardWidget extends StatelessWidget {
       for (int y = 0; y < Board.WIDTH; y++) {
         var cell = board.findCell(x, y);
         if ( cell != null ) {
-          children.add(new CellWidget(cell));
+          children.addAll(createCellWidgets(cell));
         }
       }
     }

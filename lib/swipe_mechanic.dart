@@ -66,10 +66,11 @@ Set<Cell> moveLeft(Set<Cell> matrix) {
         var c2 = r[x+1];
 
         // merge them.
-        r[x] = Cell(c1.value * 2, c1.current, Position(x,y));
+        r[x] = Cell(c1.value * 2, c1.current, Position(x,y), c2.current);
 
         // remove the second one from the list. and collapse.
-        r.remove(c2);
+        //r[x+1] = null;
+        r.removeAt(x+1);
 
       } else {
         // just updates its position then.

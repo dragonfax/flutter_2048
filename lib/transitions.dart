@@ -143,11 +143,13 @@ class SlidePositionedTransition extends StatefulWidget {
   final Position target;
   final double cellWidth;
 
-  SlidePositionedTransition(
-      {@required this.child,
+  SlidePositionedTransition({
+      @required Key key,
+      @required this.child,
       @required this.source,
       @required this.target,
-      @required this.cellWidth});
+      @required this.cellWidth
+    }) : super(key: key);
 
   @override
   SlidePositionedState createState() => new SlidePositionedState();
@@ -161,8 +163,15 @@ class SlidePositionedState extends State<SlidePositionedTransition>
   initState() {
     super.initState();
     controller = new AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 600));
+        vsync: this, duration: const Duration(milliseconds: 1000));
     // debugPrint("starting animation to ${widget.target}.");
+    controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(SlidePositionedTransition oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    controller.reset();
     controller.forward();
   }
 
@@ -202,10 +211,9 @@ class SlidePositionedState extends State<SlidePositionedTransition>
 
     // debugPrint("returning new absolute position transition to $target from $source.");
     return new AbsolutePositionedTransition(
-        // key: new PieceKey(widget.piece),
-        key: new UniqueKey(),
         child: widget.child,
         size: new Size(widget.cellWidth, widget.cellWidth),
-        offset: offset);
+        offset: offset
+      );
   }
 }

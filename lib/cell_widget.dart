@@ -5,8 +5,9 @@ import 'cell.dart';
 
 const CellWidth = 60.0;
 
-Widget createPositioned(Position pos, Widget child) {
+Widget createPositioned(Object key, Position pos, Widget child) {
   return new Positioned(
+    key: ObjectKey(key),
       top: pos.y * CellWidth,
       height: CellWidth,
       left: pos.x * CellWidth,
@@ -14,14 +15,8 @@ Widget createPositioned(Position pos, Widget child) {
       child: child);
 }
 
-class CellWidget extends StatelessWidget {
-  final Cell cell;
+List<Widget> createCellWidgets(Cell cell) {
 
-  CellWidget(this.cell)
-      : super(key: cell == null ? null : new ObjectKey(cell));
-
-  @override
-  Widget build(BuildContext context) {
     var fontSize = 28.0;
     if (cell != null) {
       if (cell.value > 999) {
@@ -54,20 +49,31 @@ class CellWidget extends StatelessWidget {
 
     var position = cell.current;
     if (cell == null) {
-      return createPositioned(position, new EmptyAppearTransition(container));
+      return [createPositioned(cell, position, new EmptyAppearTransition(container))];
     } else if (cell.source == null) {
-      return createPositioned(position, new PopInTransition(container));
+      return [createPositioned(cell, position, new PopInTransition(container))];
     } else {
-      return new SlidePositionedTransition(
-        cellWidth: CellWidth,
-        child: container,
-        source: cell.source,
-        target: cell.current,
+      List<Widget> widgets = List();
+      widgets.add(
+        new SlidePositionedTransition(
+          key: ObjectKey(cell.source),
+          cellWidth: CellWidth,
+          child: container,
+          source: cell.source,
+          target: cell.current,
+        )
       );
+      if ( cell.source2 != null ) {
+        widgets.add(
+          new SlidePositionedTransition(
+            key: ObjectKey(cell.source2),
+            cellWidth: CellWidth,
+            child: container,
+            source: cell.source2,
+            target: cell.current,
+          )
+        );
+      }
+      return widgets;
     }
-    /*
-     } else {
-       throw "unknown cell source";
-     } */
-  }
 }

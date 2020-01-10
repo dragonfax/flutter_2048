@@ -4,12 +4,13 @@ import 'package:quiver/core.dart';
 class Cell {
   final int value;
   final Position source;
+  final Position source2;
   final Position current;
 
-  Cell(this.value, [this.source, this.current]);
+  Cell(this.value, [this.source, this.current, this.source2]);
 
-  bool operator ==(o) => o is Cell && current == o.current && value == o.value;
-  int get hashCode => hash2(value.hashCode,current.hashCode);
+  bool operator ==(o) => o is Cell && current == o.current && value == o.value && source == o.source && source2 == o.source2;
+  int get hashCode => hash2(value.hashCode,hash2(current.hashCode,hash2(source.hashCode, source2.hashCode)));
 
   @override
   String toString() {
