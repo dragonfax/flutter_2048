@@ -169,13 +169,6 @@ class SlidePositionedState extends State<SlidePositionedTransition>
   }
 
   @override
-  void didUpdateWidget(SlidePositionedTransition oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    controller.reset();
-    controller.forward();
-  }
-
-  @override
   dispose() {
     controller.dispose();
     super.dispose();

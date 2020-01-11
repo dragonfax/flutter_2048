@@ -96,7 +96,7 @@ Set<Cell> rotate(Set<Cell> matrix) {
   Set<Cell> newMatrix = new Set();
 
   for ( var c in matrix ) {
-    newMatrix.add(Cell(c.value, rotatePosition(c.source), rotatePosition(c.current)));
+    newMatrix.add(Cell(c.value, rotatePosition(c.source), rotatePosition(c.current), rotatePosition(c.source2)));
   }
   return newMatrix;
 }

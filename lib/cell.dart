@@ -1,11 +1,15 @@
 import 'position.dart';
 import 'package:quiver/core.dart';
+import 'package:flutter/widgets.dart';
 
 class Cell {
   final int value;
   final Position source;
   final Position source2;
   final Position current;
+
+  final UniqueKey source1Key = UniqueKey();
+  final UniqueKey source2Key = UniqueKey();
 
   Cell(this.value, [this.source, this.current, this.source2]);
 

@@ -5,9 +5,9 @@ import 'cell.dart';
 
 const CellWidth = 60.0;
 
-Widget createPositioned(Object key, Position pos, Widget child) {
+Widget createPositioned(Key key, Position pos, Widget child) {
   return new Positioned(
-    key: ObjectKey(key),
+    key: key,
       top: pos.y * CellWidth,
       height: CellWidth,
       left: pos.x * CellWidth,
@@ -15,8 +15,7 @@ Widget createPositioned(Object key, Position pos, Widget child) {
       child: child);
 }
 
-List<Widget> createCellWidgets(Cell cell) {
-
+Widget _container(Cell cell) {
     var fontSize = 28.0;
     if (cell != null) {
       if (cell.value > 999) {
@@ -47,28 +46,34 @@ List<Widget> createCellWidgets(Cell cell) {
         // )
         );
 
-    var position = cell.current;
+    return container;
+  }
+
+  List<Widget> createCellWidgets(Cell cell) {
+
     if (cell == null) {
-      return [createPositioned(cell, position, new EmptyAppearTransition(container))];
+      return [createPositioned(null, cell.current, new EmptyAppearTransition(_container(cell)))];
     } else if (cell.source == null) {
-      return [createPositioned(cell, position, new PopInTransition(container))];
+      return [createPositioned(ObjectKey(cell), cell.current, new PopInTransition(_container(cell)))];
     } else {
+      print("adding cell");
       List<Widget> widgets = List();
       widgets.add(
         new SlidePositionedTransition(
-          key: ObjectKey(cell.source),
+          key: cell.source1Key,
           cellWidth: CellWidth,
-          child: container,
+          child: _container(cell),
           source: cell.source,
           target: cell.current,
         )
       );
       if ( cell.source2 != null ) {
+        print("adding second merged cell for ${cell.value}");
         widgets.add(
           new SlidePositionedTransition(
-            key: ObjectKey(cell.source2),
+            key: cell.source2Key,
             cellWidth: CellWidth,
-            child: container,
+            child: _container(cell),
             source: cell.source2,
             target: cell.current,
           )
