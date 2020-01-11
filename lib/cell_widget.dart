@@ -15,70 +15,86 @@ Widget createPositioned(Key key, Position pos, Widget child) {
       child: child);
 }
 
-Widget _container(Cell cell) {
-    var fontSize = 28.0;
-    if (cell != null) {
-      if (cell.value > 999) {
-        fontSize = 14.0;
-      } else if (cell.value > 99) {
-        fontSize = 17.0;
-      } else if (cell.value > 9) {
-        fontSize = 23.0;
-      }
+double fontSizeFor(int value) {
+  var fontSize = 28.0;
+  if (value != null ) {
+    if (value > 999) {
+      fontSize = 14.0;
+    } else if (value > 99) {
+      fontSize = 17.0;
+    } else if (value > 9) {
+      fontSize = 23.0;
     }
-
-    var container = new Container(
-        margin: const EdgeInsets.all(3.0),
-        padding: const EdgeInsets.all(8.0),
-        width: 60.0,
-        height: 60.0,
-        alignment: Alignment.center,
-        decoration: new BoxDecoration(
-            color: Colors.white,
-            border: new Border.all(width: 2.0, color: Colors.black),
-            borderRadius: const BorderRadius.all(const Radius.circular(10.0))),
-        // child: new FittedBox(
-        // fit: BoxFit.scaleDown,
-        child: new Text(
-            (cell == null || cell.value == null) ? " " : cell.toString(),
-            style:
-                new TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold))
-        // )
-        );
-
-    return container;
   }
+  return fontSize;
+}
 
-  List<Widget> createCellWidgets(Cell cell) {
+Widget _container(Cell cell, int value, [int finalValue]) {
+  if (finalValue == null ) {
+    finalValue = value;
+  }
+  var container = new Container(
+    margin: const EdgeInsets.all(3.0),
+    padding: const EdgeInsets.all(8.0),
+    width: 60.0,
+    height: 60.0,
+    alignment: Alignment.center,
+    decoration: new BoxDecoration(
+        color: Colors.white,
+        border: new Border.all(width: 2.0, color: Colors.black),
+        borderRadius: const BorderRadius.all(const Radius.circular(10.0))),
+    child: SwitchTransition(
+      child1: new Text(
+        value == null ? " " : value.toString(),
+        style:
+            new TextStyle(fontSize: fontSizeFor(value), fontWeight: FontWeight.bold)
+      ),
+      child2: new Text(
+        finalValue == null ? " " : finalValue.toString(),
+        style:
+            new TextStyle(fontSize: fontSizeFor(finalValue), fontWeight: FontWeight.bold)
+      ),
+    )
+  );
 
-    if (cell == null) {
-      return [createPositioned(null, cell.current, new EmptyAppearTransition(_container(cell)))];
-    } else if (cell.source == null) {
-      return [createPositioned(ObjectKey(cell), cell.current, new PopInTransition(_container(cell)))];
-    } else {
-      print("adding cell");
-      List<Widget> widgets = List();
-      widgets.add(
-        new SlidePositionedTransition(
-          key: cell.source1Key,
-          cellWidth: CellWidth,
-          child: _container(cell),
-          source: cell.source,
-          target: cell.current,
-        )
-      );
-      if ( cell.source2 != null ) {
-        print("adding second merged cell for ${cell.value}");
-        widgets.add(
-          new SlidePositionedTransition(
-            key: cell.source2Key,
-            cellWidth: CellWidth,
-            child: _container(cell),
-            source: cell.source2,
-            target: cell.current,
-          )
-        );
-      }
-      return widgets;
-    }
+  return container;
+}
+
+List<Widget> createCellWidgets(Cell cell) {
+
+  if (cell == null) {
+    return [createPositioned(null, cell.current, new EmptyAppearTransition(_container(cell, cell.value)))];
+  } else if (cell.source == null) {
+    return [createPositioned(ObjectKey(cell), cell.current, new PopInTransition(_container(cell, cell.value)))];
+  } else if ( cell.source2 != null ) {
+    /* 2 cells merging together */
+    var value = cell.value;
+    return [
+      new SlidePositionedTransition(
+        key: cell.source1Key,
+        cellWidth: CellWidth,
+        child: _container(cell, (value/2).floor(), value),
+        source: cell.source,
+        target: cell.current,
+      ),
+      new SlidePositionedTransition(
+        key: cell.source2Key,
+        cellWidth: CellWidth,
+        child: _container(cell, (value/2).floor(), value),
+        source: cell.source2,
+        target: cell.current,
+      )
+    ];
+  } else {
+    // a single cell moving
+    return [
+      new SlidePositionedTransition(
+        key: cell.source1Key,
+        cellWidth: CellWidth,
+        child: _container(cell, cell.value),
+        source: cell.source,
+        target: cell.current,
+      )
+    ];
+  }
 }

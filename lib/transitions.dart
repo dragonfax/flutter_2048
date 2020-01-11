@@ -163,7 +163,7 @@ class SlidePositionedState extends State<SlidePositionedTransition>
   initState() {
     super.initState();
     controller = new AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1000));
+        vsync: this, duration: const Duration(milliseconds: 500));
     // debugPrint("starting animation to ${widget.target}.");
     controller.forward();
   }
@@ -209,4 +209,52 @@ class SlidePositionedState extends State<SlidePositionedTransition>
         offset: offset
       );
   }
+}
+
+class SwitchTransition extends StatefulWidget {
+
+  final Widget child1;
+  final Widget child2;
+
+  SwitchTransition({ @required this.child1, @required this.child2 });
+
+  @override
+  SwitchState createState() => SwitchState();
+}
+
+class SwitchState extends State<SwitchTransition> with SingleTickerProviderStateMixin {
+
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      child: widget.child1,
+      builder: (BuildContext context, Widget child) {
+        if ( _controller.isCompleted ) {
+          return widget.child2;
+        } else {
+          return child;
+        }
+      },
+    );
+  }
+
+
 }
